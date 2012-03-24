@@ -1,8 +1,23 @@
 (function() {
-  var Molbert, options;
+  var Colorizer, Molbert, options;
   options = {
     autoResizeCanvas: true
   };
+  Colorizer = (function() {
+    function Colorizer() {
+      this.hue = 0;
+      this.saturation = 0;
+    }
+    Colorizer.prototype.nextColour = function() {
+      var fs;
+      this.hue++;
+      if (this.hue > 360) {
+        this.hue = 0;
+      }
+      return fs = 'hsl(' + this.hue + ',100%,50%)';
+    };
+    return Colorizer;
+  })();
   Molbert = (function() {
     function Molbert(canvas) {
       this.canvas = canvas;
@@ -10,7 +25,8 @@
       this.resizeCanvas();
       this.initTouchable();
       this.drawRadius = 10;
-      this.ctx.fillStyle = "#8ED6FF";
+      this.ctx.fillStyle = "#fff";
+      this.colorizer = new Colorizer;
     }
     Molbert.prototype.drawDot = function(x, y) {
       this.ctx.beginPath();
@@ -34,6 +50,7 @@
       this.canvas.addEventListener("touchmove", function(e) {
         var touch, _i, _len, _ref, _results;
         e.preventDefault();
+        that.setNextColour();
         _ref = e.changedTouches;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -45,6 +62,9 @@
       return this.canvas.addEventListener("touchend", function(e) {
         return true;
       });
+    };
+    Molbert.prototype.setNextColour = function() {
+      return this.ctx.fillStyle = this.colorizer.nextColour();
     };
     Molbert.prototype.resizeCanvas = function() {
       this.canvas.width = window.innerWidth;

@@ -1,6 +1,16 @@
 options =
   autoResizeCanvas: true
 
+class Colorizer
+  constructor: ->
+    @hue = 0
+    @saturation = 0
+    
+  nextColour: ->
+    @hue++
+    @hue = 0 if @hue > 360
+    fs = 'hsl(' + @hue + ',100%,50%)';
+
 class Molbert
   constructor: (@canvas) ->
     @ctx = @canvas.getContext "2d"
@@ -8,7 +18,8 @@ class Molbert
     @initTouchable()
     
     @drawRadius = 10
-    @ctx.fillStyle = "#8ED6FF"
+    @ctx.fillStyle = "#fff"
+    @colorizer = new Colorizer
     
   drawDot: (x, y) ->
     @ctx.beginPath();
@@ -26,11 +37,15 @@ class Molbert
       
     @canvas.addEventListener "touchmove", (e) ->
       e.preventDefault()
+      that.setNextColour()
       for touch in e.changedTouches
         that.drawDot touch.clientX, touch.clientY
       
     @canvas.addEventListener "touchend", (e) ->
       true
+      
+  setNextColour: ->
+    @ctx.fillStyle = @colorizer.nextColour()
       
   resizeCanvas: ->
     @canvas.width = window.innerWidth
