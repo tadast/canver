@@ -40,6 +40,9 @@ TouchLog = (function() {
   function TouchLog() {
     this.log = {};
   }
+  TouchLog.prototype.forTouch = function(touch) {
+    return this.log[touch.identifier];
+  };
   TouchLog.prototype.logEvent = function(e) {
     var entry, touch, _i, _len, _ref, _results;
     _ref = e.touches;
@@ -58,6 +61,16 @@ TouchLog = (function() {
   TouchLog.prototype.clear = function(touchId) {
     return delete this.log[touchId];
   };
+  TouchLog.prototype.clearFromEvent = function(event) {
+    var touch, _i, _len, _ref, _results;
+    _ref = event.touches;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      touch = _ref[_i];
+      _results.push(this.clear(touch.identifier));
+    }
+    return _results;
+  };
   return TouchLog;
 })();
 DrawTool = (function() {
@@ -66,6 +79,9 @@ DrawTool = (function() {
     this.ctx = ctx;
     this.drawRadius = 10;
   }
+  DrawTool.prototype.setRadius = function(radius) {
+    return this.drawRadius = radius;
+  };
   return DrawTool;
 })();
 DotTool = (function() {
@@ -109,29 +125,32 @@ PencilTool = (function() {
   function PencilTool() {
     PencilTool.__super__.constructor.apply(this, arguments);
   }
+  PencilTool.prototype.init = function() {
+    this.touchlog || (this.touchlog = new TouchLog);
+    this.ctx.setLineJoin('round');
+    return this.ctx.setLineCap('round');
+  };
   PencilTool.prototype.start = function(e) {
-    var firstTouch;
-    firstTouch = e.touches[0];
-    return this.ctx.moveTo(firstTouch.clientX, firstTouch.clientY);
+    return this.touchlog.logEvent(e);
   };
   PencilTool.prototype.move = function(e) {
-    var touch, _i, _len, _ref;
+    var previous, touch, _i, _len, _ref, _results;
+    this.touchlog.logEvent(e);
     _ref = e.changedTouches;
+    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       touch = _ref[_i];
+      previous = this.touchlog.forTouch(touch).previous;
+      this.ctx.beginPath();
+      this.ctx.lineWidth = this.drawRadius;
+      this.ctx.moveTo(previous.x, previous.y);
       this.ctx.lineTo(touch.clientX, touch.clientY);
+      this.ctx.stroke();
+      _results.push(this.ctx.closePath());
     }
-    return this.ctx.stroke();
+    return _results;
   };
-  PencilTool.prototype.end = function(e) {
-    return this.ctx.stroke();
-  };
-  PencilTool.prototype.draw = function(x, y) {
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, this.drawRadius, 0, Math.PI * 2, true);
-    this.ctx.closePath();
-    return this.ctx.fill();
-  };
+  PencilTool.prototype.end = function(e) {};
   return PencilTool;
 })();
 Canver = (function() {
@@ -143,7 +162,8 @@ Canver = (function() {
     this.drawRadius = 10;
     this.ctx.fillStyle = "#fff";
     this.colorizer = new Colorizer;
-    this.tool = new DotTool(this.canvas, this.ctx);
+    this.tool = new PencilTool(this.canvas, this.ctx);
+    this.tool.init();
   }
   Canver.prototype.initTouchable = function() {
     this.canvas.addEventListener("touchstart", __bind(function(e) {

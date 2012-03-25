@@ -24,17 +24,24 @@ class TouchLogEntry
 class TouchLog
   constructor: ->
     @log = {}
-    
+
+  forTouch: (touch) ->
+    @log[touch.identifier]
+
   logEvent: (e) ->
     for touch in e.touches
       entry = @findOrNew(touch.identifier)
       entry.updateWith(touch.clientX, touch.clientY)
-      
+
   findOrNew: (touchId) ->
     @log[touchId] ||= new TouchLogEntry
-    
+
   clear: (touchId) ->
     delete @log[touchId]
+
+  clearFromEvent: (event) ->
+    for touch in event.touches
+      @clear touch.identifier
 
 # A base class for drawing tools
 # A drawing tool must have three methods:
@@ -44,6 +51,9 @@ class TouchLog
 class DrawTool
   constructor: (@canvas, @ctx) ->
     @drawRadius = 10
+
+  setRadius: (radius) ->
+    @drawRadius = radius
 
 # Dot tool draws bubbles on every event
 class DotTool extends DrawTool
@@ -67,23 +77,27 @@ class DotTool extends DrawTool
 # Pencil tool draws like a pencil yo!
 # Currently doesn't work as expected with multitouch
 class PencilTool extends DrawTool
+  init: ->
+    @touchlog ||= new TouchLog
+    @ctx.setLineJoin('round')
+    @ctx.setLineCap('round')
+
   start: (e) ->
-    firstTouch = e.touches[0]
-    @ctx.moveTo firstTouch.clientX, firstTouch.clientY
+    @touchlog.logEvent e
 
   move: (e) ->
-    for touch in e.changedTouches
+    @touchlog.logEvent e
+    for touch in e.changedTouches # migth be buggy, because logger does not know when to use changed vs all touches
+      previous = @touchlog.forTouch(touch).previous
+      @ctx.beginPath()
+      @ctx.lineWidth = @drawRadius
+      @ctx.moveTo previous.x, previous.y
       @ctx.lineTo touch.clientX, touch.clientY
-    @ctx.stroke();
+      @ctx.stroke();
+      @ctx.closePath()
 
   end: (e) ->
-    @ctx.stroke();
-
-  draw: (x, y) ->
-    @ctx.beginPath();
-    @ctx.arc x, y, @drawRadius, 0, Math.PI*2, true
-    @ctx.closePath();
-    @ctx.fill();
+    #@touchlog.clearFromEvent e # does not work, removes all touches, we need to remove only ended touches
 
 # The main class
 class Canver
@@ -95,8 +109,9 @@ class Canver
     @drawRadius = 10
     @ctx.fillStyle = "#fff"
     @colorizer = new Colorizer
-    @tool = new DotTool @canvas, @ctx
-    # @tool = new PencilTool @canvas, @ctx
+    # @tool = new DotTool @canvas, @ctx
+    @tool = new PencilTool(@canvas, @ctx)
+    @tool.init()
 
 
   initTouchable: ->
