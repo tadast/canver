@@ -7,7 +7,7 @@
     child.prototype = new ctor;
     child.__super__ = parent.prototype;
     return child;
-  };
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   options = {
     autoResizeCanvas: true
   };
@@ -112,21 +112,19 @@
       this.tool = new DotTool(this.canvas, this.ctx);
     }
     Canver.prototype.initTouchable = function() {
-      var that;
-      that = this;
-      this.canvas.addEventListener("touchstart", function(e) {
+      this.canvas.addEventListener("touchstart", __bind(function(e) {
         e.preventDefault();
-        return that.tool.start(e);
-      });
-      this.canvas.addEventListener("touchmove", function(e) {
+        return this.tool.start(e);
+      }, this));
+      this.canvas.addEventListener("touchmove", __bind(function(e) {
         e.preventDefault();
-        that.setNextColour();
-        return that.tool.move(e);
-      });
-      return this.canvas.addEventListener("touchend", function(e) {
-        that.tool.end(e);
+        this.setNextColour();
+        return this.tool.move(e);
+      }, this));
+      return this.canvas.addEventListener("touchend", __bind(function(e) {
+        this.tool.end(e);
         return true;
-      });
+      }, this));
     };
     Canver.prototype.setNextColour = function() {
       this.ctx.fillStyle = this.colorizer.nextColour();

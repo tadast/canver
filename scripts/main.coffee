@@ -80,18 +80,17 @@ class Canver
 
 
   initTouchable: ->
-    that = this
-    @canvas.addEventListener "touchstart", (e) ->
+    @canvas.addEventListener "touchstart", (e) =>
       e.preventDefault() # don't scroll yo!
-      that.tool.start(e)
+      @tool.start(e)
 
-    @canvas.addEventListener "touchmove", (e) ->
+    @canvas.addEventListener "touchmove", (e) =>
       e.preventDefault()
-      that.setNextColour()
-      that.tool.move(e)
+      @setNextColour()
+      @tool.move(e)
 
-    @canvas.addEventListener "touchend", (e) ->
-      that.tool.end(e)
+    @canvas.addEventListener "touchend", (e) =>
+      @tool.end(e)
       true
 
   setNextColour: ->
