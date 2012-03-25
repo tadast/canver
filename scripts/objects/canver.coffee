@@ -1,6 +1,3 @@
-options =
-  autoResizeCanvas: true
-
 # Colorizer smoothly iterates through all hues
 # with maximum saturation automatically.
 class Colorizer
@@ -101,18 +98,23 @@ class PencilTool extends DrawTool
 
 # The main class
 class Canver
-  constructor: (@canvas) ->
+  constructor: (@canvas, @bgColor) ->
     @ctx = @canvas.getContext "2d"
     @resizeCanvas()
     @initTouchable()
-
+    @repaintBackground(@bgColor)
     @drawRadius = 10
-    @ctx.fillStyle = "#fff"
     @colorizer = new Colorizer
     # @tool = new DotTool @canvas, @ctx
     @tool = new PencilTool(@canvas, @ctx)
     @tool.init()
+    @ctx.fillStyle = "#fa0"
 
+  repaintBackground: (fillStyle) ->
+    fs = @ctx.fillStyle
+    @ctx.fillStyle = fillStyle
+    @ctx.fillRect 0, 0, @canvas.width, @canvas.height
+    @ctx.fillStyle = fs
 
   initTouchable: ->
     @canvas.addEventListener "touchstart", (e) =>

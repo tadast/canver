@@ -1,4 +1,4 @@
-var Canver, Colorizer, DotTool, DrawTool, PencilTool, TouchLog, TouchLogEntry, options;
+var Canver, Colorizer, DotTool, DrawTool, PencilTool, TouchLog, TouchLogEntry;
 var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
   for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
   function ctor() { this.constructor = child; }
@@ -7,9 +7,6 @@ var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, par
   child.__super__ = parent.prototype;
   return child;
 }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-options = {
-  autoResizeCanvas: true
-};
 Colorizer = (function() {
   function Colorizer() {
     this.hue = 0;
@@ -154,17 +151,26 @@ PencilTool = (function() {
   return PencilTool;
 })();
 Canver = (function() {
-  function Canver(canvas) {
+  function Canver(canvas, bgColor) {
     this.canvas = canvas;
+    this.bgColor = bgColor;
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
     this.initTouchable();
+    this.repaintBackground(this.bgColor);
     this.drawRadius = 10;
-    this.ctx.fillStyle = "#fff";
     this.colorizer = new Colorizer;
     this.tool = new PencilTool(this.canvas, this.ctx);
     this.tool.init();
+    this.ctx.fillStyle = "#fa0";
   }
+  Canver.prototype.repaintBackground = function(fillStyle) {
+    var fs;
+    fs = this.ctx.fillStyle;
+    this.ctx.fillStyle = fillStyle;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    return this.ctx.fillStyle = fs;
+  };
   Canver.prototype.initTouchable = function() {
     this.canvas.addEventListener("touchstart", __bind(function(e) {
       e.preventDefault();

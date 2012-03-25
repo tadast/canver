@@ -1,4 +1,43 @@
 * {
+  margin: 0; 
   padding: 0;
-  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+html, body{
+  width: 100%;
+  height: 100%;
+  font-family: Helvetica;
+}
+
+canvas{
+  display: none;
+}
+
+#backgroundSetup{
+  overflow: hidden;
+  box-sizing: border-box;
+  top: 0;
+  height: 100%;
+  text-align: center;
+}
+
+
+.bgSelect{
+  display: inline-block;
+  width: 33%;
+  min-height: 100%;
+}
+
+#setBgBlack{
+  background-color: black;
+}
+
+#setBgWhite{
+  background-color: white;
+}
+
+#setBgGrey{
+  background-color: #333;
 }
