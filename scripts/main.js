@@ -1,5 +1,5 @@
 (function() {
-  var Colorizer, DotTool, DrawTool, Molbert, PencilTool, options;
+  var Canver, Colorizer, DotTool, DrawTool, PencilTool, options;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -100,8 +100,8 @@
     };
     return PencilTool;
   })();
-  Molbert = (function() {
-    function Molbert(canvas) {
+  Canver = (function() {
+    function Canver(canvas) {
       this.canvas = canvas;
       this.ctx = this.canvas.getContext("2d");
       this.resizeCanvas();
@@ -111,7 +111,7 @@
       this.colorizer = new Colorizer;
       this.tool = new DotTool(this.canvas, this.ctx);
     }
-    Molbert.prototype.initTouchable = function() {
+    Canver.prototype.initTouchable = function() {
       var that;
       that = this;
       this.canvas.addEventListener("touchstart", function(e) {
@@ -128,24 +128,24 @@
         return true;
       });
     };
-    Molbert.prototype.setNextColour = function() {
+    Canver.prototype.setNextColour = function() {
       this.ctx.fillStyle = this.colorizer.nextColour();
       return this.ctx.strokeStyle = this.colorizer.nextColour();
     };
-    Molbert.prototype.resizeCanvas = function() {
+    Canver.prototype.resizeCanvas = function() {
       this.canvas.width = window.innerWidth;
       return this.canvas.height = window.innerHeight;
     };
-    return Molbert;
+    return Canver;
   })();
   window.onload = function() {
     var canvas;
     canvas = document.getElementById('canvas');
-    return this.molbert = new Molbert(canvas);
+    return this.canver = new Canver(canvas);
   };
   if (options.autoResizeCanvas) {
     window.onresize = function() {
-      return this.molbert.resizeCanvas();
+      return this.canver.resizeCanvas();
     };
   }
 }).call(this);

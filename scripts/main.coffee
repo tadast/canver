@@ -66,7 +66,7 @@ class PencilTool extends DrawTool
     @ctx.fill();
 
 # The main class
-class Molbert
+class Canver
   constructor: (@canvas) ->
     @ctx = @canvas.getContext "2d"
     @resizeCanvas()
@@ -104,8 +104,8 @@ class Molbert
 
 window.onload = ->
   canvas = document.getElementById('canvas');
-  @molbert = new Molbert canvas
+  @canver = new Canver canvas
 
 if options.autoResizeCanvas
   window.onresize = ->
-    @molbert.resizeCanvas()
+    @canver.resizeCanvas()
