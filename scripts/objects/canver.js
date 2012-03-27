@@ -11,14 +11,24 @@ Colorizer = (function() {
   function Colorizer() {
     this.hue = 0;
     this.saturation = 0;
+    this.modes = ['random', 'blue', 'green', 'red', 'yellow'];
   }
   Colorizer.prototype.nextColour = function() {
-    var fs;
-    this.hue++;
-    if (this.hue > 360) {
-      this.hue = 0;
+    if (this.modes[0] === 'random') {
+      this.hue++;
+      if (this.hue > 360) {
+        this.hue = 0;
+      }
+      return 'hsl(' + this.hue + ',100%,50%)';
+    } else {
+      return this.modes[0];
     }
-    return fs = 'hsl(' + this.hue + ',100%,50%)';
+  };
+  Colorizer.prototype.switchMode = function() {
+    var x;
+    x = this.modes.shift();
+    this.modes.push(x);
+    return this.modes[0];
   };
   return Colorizer;
 })();
@@ -151,9 +161,11 @@ PencilTool = (function() {
   return PencilTool;
 })();
 Canver = (function() {
-  function Canver(canvas, bgColor) {
+  function Canver(canvas, menuElm, bgColor) {
     this.canvas = canvas;
+    this.menuElm = menuElm;
     this.bgColor = bgColor;
+    this.menu = new Menu(this.menuElm, this);
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
     this.initTouchable();
@@ -193,6 +205,9 @@ Canver = (function() {
   Canver.prototype.resizeCanvas = function() {
     this.canvas.width = window.innerWidth;
     return this.canvas.height = window.innerHeight;
+  };
+  Canver.prototype.switchColor = function() {
+    return this.colorizer.switchMode();
   };
   return Canver;
 })();
