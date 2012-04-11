@@ -54,3 +54,8 @@ canvas{
   background-color: red;
   opacity: 0.1;
 }
+
+#sorry{
+  text-align: center;
+  padding-top: 20%;
+}
