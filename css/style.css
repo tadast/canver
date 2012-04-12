@@ -73,7 +73,7 @@ canvas{
   padding: 0 10px;
 }
 
-.color{
+.color, .size{
   border-radius: 15px;
   width: 30px;
   height: 30px;
@@ -87,6 +87,32 @@ canvas{
 
 .color.active{
   border: 2px solid #FF0;
+}
+
+.size{
+  background-color: #aaa;
+}
+
+.size.active{
+  background-color: #fff;
+}
+
+#smallSize{
+  height: 16px;
+  width: 16px;
+  border-radius: 8px;
+}
+
+#mediumSize{
+  height: 24px;
+  width: 24px;
+  border-radius: 12px;
+}
+
+#bigSize{
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
 }
 
 .separator{

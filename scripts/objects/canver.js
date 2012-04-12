@@ -83,8 +83,8 @@ DrawTool = (function() {
     this.ctx = ctx;
     this.drawRadius = 10;
   }
-  DrawTool.prototype.setRadius = function(radius) {
-    return this.drawRadius = radius;
+  DrawTool.prototype.setSize = function(size) {
+    return this.drawRadius = size;
   };
   return DrawTool;
 })();
@@ -204,6 +204,9 @@ Canver = (function() {
   };
   Canver.prototype.setColor = function(color) {
     return this.colorizer.setColor(color);
+  };
+  Canver.prototype.setSize = function(size) {
+    return this.tool.setSize(size);
   };
   return Canver;
 })();

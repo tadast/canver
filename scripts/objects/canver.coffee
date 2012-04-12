@@ -56,8 +56,8 @@ class DrawTool
   constructor: (@canvas, @ctx) ->
     @drawRadius = 10
 
-  setRadius: (radius) ->
-    @drawRadius = radius
+  setSize: (size) ->
+    @drawRadius = size
 
 # Dot tool draws bubbles on every event
 class DotTool extends DrawTool
@@ -147,4 +147,7 @@ class Canver
     @canvas.height = window.innerHeight
 
   setColor: (color) ->
-    @colorizer.setColor(color)
+    @colorizer.setColor color
+    
+  setSize: (size) ->
+    @tool.setSize size

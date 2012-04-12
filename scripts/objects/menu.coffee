@@ -2,7 +2,9 @@ class Menu
   constructor: (@start, @element, @canver) ->
     @start.style.display = 'block';
     @activeColor = @element.getElementsByClassName('color active')[0]
+    @activeSize = @element.getElementsByClassName('size active')[0]
     @initColors()
+    @initSizes()
 
     @start.addEventListener "touchstart", (e) =>
       e.preventDefault();
@@ -17,8 +19,19 @@ class Menu
         color = selectedElm.dataset['color']
         @canver.setColor color
         
-        selectedElm.className = 'color active'
         @activeColor.className = 'color'
+        selectedElm.className = 'color active'
         @activeColor = selectedElm
         
-    
+  initSizes: ->
+    sizes = @element.getElementsByClassName('size')
+    for size in sizes
+      size.addEventListener "touchstart", (e) =>
+        selectedElm = e.currentTarget
+        size = selectedElm.dataset['size']
+        @canver.setSize size
+        
+        @activeSize.className = 'size'
+        selectedElm.className = 'size active'
+        @activeSize = selectedElm
+            

@@ -7,7 +7,9 @@ Menu = (function() {
     this.canver = canver;
     this.start.style.display = 'block';
     this.activeColor = this.element.getElementsByClassName('color active')[0];
+    this.activeSize = this.element.getElementsByClassName('size active')[0];
     this.initColors();
+    this.initSizes();
     this.start.addEventListener("touchstart", __bind(function(e) {
       e.preventDefault();
       return this.start.style['background-color'] = this.canver.switchColor();
@@ -25,9 +27,27 @@ Menu = (function() {
         selectedElm = e.currentTarget;
         color = selectedElm.dataset['color'];
         this.canver.setColor(color);
-        selectedElm.className = 'color active';
         this.activeColor.className = 'color';
+        selectedElm.className = 'color active';
         return this.activeColor = selectedElm;
+      }, this)));
+    }
+    return _results;
+  };
+  Menu.prototype.initSizes = function() {
+    var size, sizes, _i, _len, _results;
+    sizes = this.element.getElementsByClassName('size');
+    _results = [];
+    for (_i = 0, _len = sizes.length; _i < _len; _i++) {
+      size = sizes[_i];
+      _results.push(size.addEventListener("touchstart", __bind(function(e) {
+        var selectedElm;
+        selectedElm = e.currentTarget;
+        size = selectedElm.dataset['size'];
+        this.canver.setSize(size);
+        this.activeSize.className = 'size';
+        selectedElm.className = 'size active';
+        return this.activeSize = selectedElm;
       }, this)));
     }
     return _results;
