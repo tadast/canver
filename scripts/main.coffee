@@ -8,8 +8,7 @@ window.onload = ->
   menu = document.getElementById 'menu'
 
   unless window.navigator.standalone
-    # alert 'Add this app to your Home Screen for better experience.'
-    0
+    alert 'Add this app to your Home Screen for better experience.'
 
   bgSetup.addEventListener "touchstart", (e) =>
     colorClicked = e.target.dataset.color

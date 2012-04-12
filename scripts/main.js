@@ -9,7 +9,7 @@ window.onload = function() {
   start = document.getElementById('start');
   menu = document.getElementById('menu');
   if (!window.navigator.standalone) {
-    0;
+    alert('Add this app to your Home Screen for better experience.');
   }
   return bgSetup.addEventListener("touchstart", __bind(function(e) {
     var colorClicked;
