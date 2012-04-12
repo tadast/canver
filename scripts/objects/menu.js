@@ -10,6 +10,7 @@ Menu = (function() {
     this.activeSize = this.element.getElementsByClassName('size active')[0];
     this.initColors();
     this.initSizes();
+    this.initReset();
     this.start.addEventListener("touchstart", __bind(function(e) {
       e.preventDefault();
       return this.start.style['background-color'] = this.canver.switchColor();
@@ -51,6 +52,15 @@ Menu = (function() {
       }, this)));
     }
     return _results;
+  };
+  Menu.prototype.initReset = function() {
+    var reset;
+    reset = document.getElementById('reset');
+    return reset.addEventListener("touchstart", __bind(function(e) {
+      if (confirm('Reset all?')) {
+        return window.location.reload();
+      }
+    }, this));
   };
   return Menu;
 })();

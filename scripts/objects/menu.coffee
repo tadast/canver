@@ -5,6 +5,7 @@ class Menu
     @activeSize = @element.getElementsByClassName('size active')[0]
     @initColors()
     @initSizes()
+    @initReset()
 
     @start.addEventListener "touchstart", (e) =>
       e.preventDefault();
@@ -34,4 +35,10 @@ class Menu
         @activeSize.className = 'size'
         selectedElm.className = 'size active'
         @activeSize = selectedElm
+
+  initReset: ->
+    reset = document.getElementById('reset')
+    reset.addEventListener "touchstart", (e) =>
+      if confirm('Reset all?')
+        window.location.reload()
             

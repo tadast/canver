@@ -110,11 +110,17 @@ canvas{
 }
 
 #bigSize{
-  height: 40px;
-  width: 40px;
-  border-radius: 20px;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
 }
 
+#reset{
+  float: right;
+  font-size: 220%;
+  color: white;
+  font-weight: 900;
+}
 .separator{
   height: 100%;
   border-left: 1px solid #555;
