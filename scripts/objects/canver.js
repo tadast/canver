@@ -11,24 +11,21 @@ Colorizer = (function() {
   function Colorizer() {
     this.hue = 0;
     this.saturation = 0;
-    this.modes = ['random', 'blue', 'green', 'red', 'yellow'];
+    this.color = '';
   }
   Colorizer.prototype.nextColour = function() {
-    if (this.modes[0] === 'random') {
+    if (this.color === '') {
       this.hue++;
       if (this.hue > 360) {
         this.hue = 0;
       }
       return 'hsl(' + this.hue + ',100%,50%)';
     } else {
-      return this.modes[0];
+      return this.color;
     }
   };
-  Colorizer.prototype.switchMode = function() {
-    var x;
-    x = this.modes.shift();
-    this.modes.push(x);
-    return this.modes[0];
+  Colorizer.prototype.setColor = function(color) {
+    return this.color = color;
   };
   return Colorizer;
 })();
@@ -161,11 +158,9 @@ PencilTool = (function() {
   return PencilTool;
 })();
 Canver = (function() {
-  function Canver(canvas, menuElm, bgColor) {
+  function Canver(canvas, bgColor) {
     this.canvas = canvas;
-    this.menuElm = menuElm;
     this.bgColor = bgColor;
-    this.menu = new Menu(this.menuElm, this);
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
     this.initTouchable();
@@ -175,6 +170,7 @@ Canver = (function() {
     this.tool = new PencilTool(this.canvas, this.ctx);
     this.tool.init();
     this.ctx.fillStyle = "#fa0";
+    this.canvas.style.display = 'block';
   }
   Canver.prototype.repaintBackground = function(fillStyle) {
     var fs;
@@ -206,8 +202,8 @@ Canver = (function() {
     this.canvas.width = window.innerWidth;
     return this.canvas.height = window.innerHeight;
   };
-  Canver.prototype.switchColor = function() {
-    return this.colorizer.switchMode();
+  Canver.prototype.setColor = function(color) {
+    return this.colorizer.setColor(color);
   };
   return Canver;
 })();

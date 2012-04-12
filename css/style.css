@@ -42,7 +42,9 @@ canvas{
   background-color: #333;
 }
 
-#menu{
+/* Menu stuff */
+
+#start{
   display: none;
   position: fixed;
   left: 0;
@@ -54,6 +56,47 @@ canvas{
   background-color: red;
   opacity: 0.1;
 }
+
+#menu{
+  position: fixed;
+  margin: 0 5%;
+  bottom: 0;
+  height: 50px;
+  z-index: 2;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border: 1px solid #555;
+  border-bottom: none;
+  width: 90%;
+  background-color: #111;
+  box-sizing: border-box;
+  padding: 0 10px;
+}
+
+.color{
+  border-radius: 15px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #fff;
+  margin: 10px 5px;
+  float: left;
+  color: white;
+  text-align: center;
+  font-size: 150%;
+}
+
+.color.active{
+  border: 2px solid #FF0;
+}
+
+.separator{
+  height: 100%;
+  border-left: 1px solid #555;
+  float: left;
+  margin: 0 10px;
+}
+
+/* Unsupported page */
 
 #sorry{
   text-align: center;

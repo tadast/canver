@@ -4,21 +4,19 @@ class Colorizer
   constructor: ->
     @hue = 0
     @saturation = 0
-    @modes = ['random', 'blue', 'green', 'red', 'yellow']
+    @color = ''
 
   # Returns the next colour value as a string
   nextColour: ->
-    if @modes[0] == 'random'
+    if @color == ''
       @hue++
       @hue = 0 if @hue > 360
       return 'hsl(' + @hue + ',100%,50%)';
     else
-      return @modes[0]
+      return @color
 
-  switchMode: ->
-    x = @modes.shift()
-    @modes.push(x)
-    @modes[0]
+  setColor: (color) ->
+    @color = color
 
 class TouchLogEntry
   updateWith: (newX, newY) ->
@@ -107,8 +105,7 @@ class PencilTool extends DrawTool
 
 # The main class
 class Canver
-  constructor: (@canvas, @menuElm, @bgColor) ->
-    @menu = new Menu @menuElm, this
+  constructor: (@canvas, @bgColor) ->
     @ctx = @canvas.getContext "2d"
     @resizeCanvas()
     @initTouchable()
@@ -119,6 +116,7 @@ class Canver
     @tool = new PencilTool(@canvas, @ctx)
     @tool.init()
     @ctx.fillStyle = "#fa0"
+    @canvas.style.display = 'block'
 
   repaintBackground: (fillStyle) ->
     fs = @ctx.fillStyle
@@ -148,5 +146,5 @@ class Canver
     @canvas.width = window.innerWidth
     @canvas.height = window.innerHeight
 
-  switchColor: ->
-    @colorizer.switchMode()
+  setColor: (color) ->
+    @colorizer.setColor(color)
