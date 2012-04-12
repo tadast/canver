@@ -7,9 +7,10 @@ class Menu
     @initSizes()
     @initReset()
 
-    @start.addEventListener "touchstart", (e) =>
+    @element.addEventListener "touchmove", (e) =>
       e.preventDefault();
-      @start.style['background-color'] = @canver.switchColor()
+    
+    # TODO: show and hide menu by tapping on @start
 
   initColors: ->
     colors = @element.getElementsByClassName('color')

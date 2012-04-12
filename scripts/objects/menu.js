@@ -11,9 +11,8 @@ Menu = (function() {
     this.initColors();
     this.initSizes();
     this.initReset();
-    this.start.addEventListener("touchstart", __bind(function(e) {
-      e.preventDefault();
-      return this.start.style['background-color'] = this.canver.switchColor();
+    this.element.addEventListener("touchmove", __bind(function(e) {
+      return e.preventDefault();
     }, this));
   }
   Menu.prototype.initColors = function() {
