@@ -5,6 +5,7 @@ class Menu
     @initColors()
     @initSizes()
     @initReset()
+    @initSave()
 
     @element.addEventListener "touchmove", (e) =>
       e.preventDefault();
@@ -55,3 +56,7 @@ class Menu
         @element.className = 'hidden'
         @start.className = 'up'
       
+  initSave: ->
+    saverElm = document.getElementById('saving')
+    saverElm.addEventListener "touchstart", (e) =>
+      @canver.switchSaveMode()

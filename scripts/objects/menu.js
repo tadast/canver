@@ -10,6 +10,7 @@ Menu = (function() {
     this.initColors();
     this.initSizes();
     this.initReset();
+    this.initSave();
     this.element.addEventListener("touchmove", __bind(function(e) {
       return e.preventDefault();
     }, this));
@@ -75,6 +76,13 @@ Menu = (function() {
         this.element.className = 'hidden';
         return this.start.className = 'up';
       }
+    }, this));
+  };
+  Menu.prototype.initSave = function() {
+    var saverElm;
+    saverElm = document.getElementById('saving');
+    return saverElm.addEventListener("touchstart", __bind(function(e) {
+      return this.canver.switchSaveMode();
     }, this));
   };
   return Menu;
