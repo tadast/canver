@@ -20,3 +20,9 @@ For iOS devices, it is recommended to add Canver to Home Screen: then it feels m
 ### Tests
 
 You'll need ruby and Bundler to run the tests. First, run `bundle install`. Once it's finished, run `bundle exec rake jasmine` and open the url provided by jasmine to run the tests. If you add any new files, make sure they are captured by the configuration file in `spec/javascripts/support/jasmine.yml` and `watch` file.
+
+### Known Issues
+
+* Does not support device orientation change.
+* Does not support image saving when added to Home Screen.
+* View is broken on smaller screens e.g. iPhone.
