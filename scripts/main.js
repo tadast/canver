@@ -8,8 +8,11 @@ window.onload = function() {
   bgSetup = document.getElementById('backgroundSetup');
   start = document.getElementById('start');
   menu = document.getElementById('menu');
+  Util.noScrollingOn(bgSetup);
+  Util.noScrollingOn(start);
+  Util.noScrollingOn(menu);
   if (!window.navigator.standalone) {
-    alert('Add this app to your Home Screen for better experience.');
+    true;
   }
   return bgSetup.addEventListener("touchstart", __bind(function(e) {
     var colorClicked;

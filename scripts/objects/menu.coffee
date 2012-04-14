@@ -6,9 +6,6 @@ class Menu
     @initSizes()
     @initReset()
     @initSave()
-
-    @element.addEventListener "touchmove", (e) =>
-      e.preventDefault();
     
     @initSwitch()
 
@@ -45,18 +42,24 @@ class Menu
   
   initSwitch: ->
     @start.style.display = 'block';
-    @start.addEventListener "touchmove", (e) =>
-      e.preventDefault()
     @start.addEventListener "touchstart", (e) =>
       e.preventDefault()
-      if @element.className == 'hidden'
-        @element.className = ''
-        @start.className = 'down'
-      else
-        @element.className = 'hidden'
-        @start.className = 'up'
+      @toggleHide()
+
+  toggleHide: ->
+    if @element.className == 'hidden'
+      @element.className = ''
+      @start.className = 'down'
+      @canver.show() #that's how we come back from save mode
+    else
+      @element.className = 'hidden'
+      @start.className = 'up'
+
       
   initSave: ->
     saverElm = document.getElementById('saving')
+    imgElement = document.getElementById('saveImage')
+    Util.noScrollingOn imgElement
     saverElm.addEventListener "touchstart", (e) =>
-      @canver.switchSaveMode()
+      @toggleHide()
+      @canver.switchSaveMode(imgElement)

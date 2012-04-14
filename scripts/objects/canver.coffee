@@ -13,6 +13,12 @@ class Canver
     @ctx.fillStyle = "#fa0"
     @canvas.style.display = 'block'
 
+  hide: ->
+    @canvas.style.display = 'none'
+    
+  show: ->
+    @canvas.style.display = 'block'
+
   repaintBackground: (fillStyle) ->
     fs = @ctx.fillStyle
     @ctx.fillStyle = fillStyle
@@ -21,7 +27,7 @@ class Canver
 
   initTouchable: ->
     @canvas.addEventListener "touchstart", (e) =>
-      e.preventDefault() # don't scroll yo!
+      e.preventDefault()
       @tool.start(e)
 
     @canvas.addEventListener "touchmove", (e) =>
@@ -30,6 +36,7 @@ class Canver
       @tool.move(e)
 
     @canvas.addEventListener "touchend", (e) =>
+      e.preventDefault()
       @tool.end(e)
       true
 
@@ -46,3 +53,11 @@ class Canver
     
   setSize: (size) ->
     @tool.setSize size
+    
+  switchSaveMode: (imageElm) ->
+    if window.navigator.standalone
+      alert "iOS does not support image saving in Home Screen mode. You can make a screenshot by holding down Home and Power buttons."
+    else
+      alert 'Tap and hold the image to save. Click menu arrow when finished.'
+      imageElm.src = @canvas.toDataURL()
+      @hide()

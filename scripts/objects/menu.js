@@ -11,9 +11,6 @@ Menu = (function() {
     this.initSizes();
     this.initReset();
     this.initSave();
-    this.element.addEventListener("touchmove", __bind(function(e) {
-      return e.preventDefault();
-    }, this));
     this.initSwitch();
   }
   Menu.prototype.initColors = function() {
@@ -64,25 +61,29 @@ Menu = (function() {
   };
   Menu.prototype.initSwitch = function() {
     this.start.style.display = 'block';
-    this.start.addEventListener("touchmove", __bind(function(e) {
-      return e.preventDefault();
-    }, this));
     return this.start.addEventListener("touchstart", __bind(function(e) {
       e.preventDefault();
-      if (this.element.className === 'hidden') {
-        this.element.className = '';
-        return this.start.className = 'down';
-      } else {
-        this.element.className = 'hidden';
-        return this.start.className = 'up';
-      }
+      return this.toggleHide();
     }, this));
   };
+  Menu.prototype.toggleHide = function() {
+    if (this.element.className === 'hidden') {
+      this.element.className = '';
+      this.start.className = 'down';
+      return this.canver.show();
+    } else {
+      this.element.className = 'hidden';
+      return this.start.className = 'up';
+    }
+  };
   Menu.prototype.initSave = function() {
-    var saverElm;
+    var imgElement, saverElm;
     saverElm = document.getElementById('saving');
+    imgElement = document.getElementById('saveImage');
+    Util.noScrollingOn(imgElement);
     return saverElm.addEventListener("touchstart", __bind(function(e) {
-      return this.canver.switchSaveMode();
+      this.toggleHide();
+      return this.canver.switchSaveMode(imgElement);
     }, this));
   };
   return Menu;

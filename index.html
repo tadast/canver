@@ -5,8 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <meta name="viewport" content = "width = device-width, height = device-height, user-scalable = no" /> 
+  <meta name="viewport" content = "width = device-width, height = device-height, user-scalable = no" />
+  <script type="text/javascript" src="scripts/objects/util.js"></script>
   <script type="text/javascript" src="scripts/objects/menu.js"></script>
+  <script type="text/javascript" src="scripts/objects/colorizer.js"></script>
+  <script type="text/javascript" src="scripts/objects/touch_log.js"></script>
+  <script type="text/javascript" src="scripts/objects/draw_tools.js"></script>
   <script type="text/javascript" src="scripts/objects/canver.js"></script>
   <script type="text/javascript" src="scripts/main.js"></script>
   <link rel="stylesheet" href="css/style.css" type="text/css" media="screen"/>
@@ -32,6 +36,7 @@
     </div>
     <div class='separator'></div>
     <div id='reset'>↻</div>
+    <div id='saving'>⍗</div>
   </div>
   <div id='backgroundSetup'>
     <div id='setBgBlack' class='bgSelect' data-color='#000'></div>
@@ -39,5 +44,6 @@
     <div id='setBgGrey' class='bgSelect' data-color='#333'></div>
   </div>  
   <canvas id='canvas'>LOL. Your browser doesn't support canvas element.</canvas>
+  <img id='saveImage' src=''></img>
 </body>
 </html>
