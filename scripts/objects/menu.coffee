@@ -1,6 +1,5 @@
 class Menu
   constructor: (@start, @element, @canver) ->
-    @start.style.display = 'block';
     @activeColor = @element.getElementsByClassName('color active')[0]
     @activeSize = @element.getElementsByClassName('size active')[0]
     @initColors()
@@ -10,7 +9,7 @@ class Menu
     @element.addEventListener "touchmove", (e) =>
       e.preventDefault();
     
-    # TODO: show and hide menu by tapping on @start
+    @initSwitch()
 
   initColors: ->
     colors = @element.getElementsByClassName('color')
@@ -42,4 +41,17 @@ class Menu
     reset.addEventListener "touchstart", (e) =>
       if confirm('Reset all?')
         window.location.reload()
-            
+  
+  initSwitch: ->
+    @start.style.display = 'block';
+    @start.addEventListener "touchmove", (e) =>
+      e.preventDefault()
+    @start.addEventListener "touchstart", (e) =>
+      e.preventDefault()
+      if @element.className == 'hidden'
+        @element.className = ''
+        @start.className = 'down'
+      else
+        @element.className = 'hidden'
+        @start.className = 'up'
+      

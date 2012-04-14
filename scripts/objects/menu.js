@@ -5,7 +5,6 @@ Menu = (function() {
     this.start = start;
     this.element = element;
     this.canver = canver;
-    this.start.style.display = 'block';
     this.activeColor = this.element.getElementsByClassName('color active')[0];
     this.activeSize = this.element.getElementsByClassName('size active')[0];
     this.initColors();
@@ -14,6 +13,7 @@ Menu = (function() {
     this.element.addEventListener("touchmove", __bind(function(e) {
       return e.preventDefault();
     }, this));
+    this.initSwitch();
   }
   Menu.prototype.initColors = function() {
     var color, colors, _i, _len, _results;
@@ -58,6 +58,22 @@ Menu = (function() {
     return reset.addEventListener("touchstart", __bind(function(e) {
       if (confirm('Reset all?')) {
         return window.location.reload();
+      }
+    }, this));
+  };
+  Menu.prototype.initSwitch = function() {
+    this.start.style.display = 'block';
+    this.start.addEventListener("touchmove", __bind(function(e) {
+      return e.preventDefault();
+    }, this));
+    return this.start.addEventListener("touchstart", __bind(function(e) {
+      e.preventDefault();
+      if (this.element.className === 'hidden') {
+        this.element.className = '';
+        return this.start.className = 'down';
+      } else {
+        this.element.className = 'hidden';
+        return this.start.className = 'up';
       }
     }, this));
   };

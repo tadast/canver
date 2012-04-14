@@ -46,15 +46,32 @@ canvas{
 
 #start{
   display: none;
+  color: #aaa;
+  background-color: #111;
   position: fixed;
   left: 0;
   bottom: 0;
-  width: 50px;
+  width: 5%;
   height: 50px;
   z-index: 2;
-  border-top-right-radius: 50px;
-  background-color: red;
-  opacity: 0.1;
+  border-top: 1px solid #555;
+  padding: 5px;
+  font-size: 26px;
+  -webkit-transition: all 0.4s ease;
+}
+
+#start.up{
+  height: 35px;
+  border-right: 1px solid #555;
+  border-top-right-radius: 10px;
+}
+
+#start:before{
+  content: '▲';
+}
+
+#start.down:before{
+  content: '▼';
 }
 
 #menu{
@@ -64,29 +81,36 @@ canvas{
   height: 50px;
   z-index: 2;
   border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
   border: 1px solid #555;
   border-bottom: none;
   width: 90%;
   background-color: #111;
   box-sizing: border-box;
   padding: 0 10px;
+  -webkit-transition: all 0.4s ease;
+  -webkit-transform: scaleX(1);
+}
+
+#menu.hidden{
+  -webkit-transform: scaleX(0);
+  bottom: -50px;
 }
 
 .color, .size{
   border-radius: 15px;
   width: 30px;
   height: 30px;
-  border: 1px solid #fff;
   margin: 10px 5px;
   float: left;
   color: white;
   text-align: center;
   font-size: 150%;
+  box-shadow: inset 1px 1px 2px #777;
 }
 
 .color.active{
-  border: 2px solid #FF0;
+  border: 3px solid #FFF;
+  box-shadow: none;
 }
 
 .size{
@@ -133,4 +157,17 @@ canvas{
 #sorry{
   text-align: center;
   padding-top: 20%;
+}
+
+/* Animations */
+
+@-webkit-keyframes spindown {
+   from { 
+     -webkit-transform: rotate(0deg) translateX(0%);
+     margin-left: 5%;
+   }
+   to{
+     -webkit-transform: rotate(90deg) translateX(52%);
+     margin-left: -50%;
+   }
 }
