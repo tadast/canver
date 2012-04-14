@@ -1,14 +1,21 @@
 ## Canver
 
-Canver is a paint application for touch screen devices.
+Canver is a paint application. It was developed for iPads, but should work (more or less) on any touchscreen device.
+You can [try it live here.](http://tadast.github.com/canver)
 
-### Supported Browsers
+It is just a simple client-side application based on HTML5 canvas, written purely in HTML, CoffeeScript and CSS.
 
-Works on mobile WebKit browsers (tested on iOS and Android).
+## Home Screen
+
+For iOS devices, it is recommended to add Canver to Home Screen: then it feels more like a native app and works on full-screen.
 
 ### Development
 
-run `./watch` to watch CoffeeScript files and their specs and compile them on the fly.
+```
+    > git clone git@github.com:tadast/canver.git
+    > cd canver
+    > ./watch # a helper script to compile all the coffee on the fly
+```
 
 ### Tests
 
