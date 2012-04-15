@@ -28,3 +28,18 @@ describe "TouchLogEntry", ->
       
       expect(entry.current).toEqual  {x: 4, y: 5}
       expect(entry.previous).toEqual {x: 1, y: 2}
+  
+  describe "distance", ->
+    it "is 0 if there is only one point", ->
+      entry.updateWith(3, 0)
+      expect(entry.distance()).toEqual 0
+      
+    it "is 2 when x has moved left by 2 points", ->
+      entry.updateWith(5, 0)
+      entry.updateWith(3, 0)
+      expect(entry.distance()).toEqual 2
+      
+    it "is 3 when x has moved right by 3 points", ->
+      entry.updateWith(5, 0)
+      entry.updateWith(8, 0)
+      expect(entry.distance()).toEqual 3

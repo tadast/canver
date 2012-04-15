@@ -7,9 +7,7 @@ class Canver
     @repaintBackground(@bgColor)
     @drawRadius = 10
     @colorizer = new Colorizer
-    # @tool = new DotTool @canvas, @ctx
-    @tool = new PencilTool(@canvas, @ctx)
-    @tool.init()
+    @setTool 'dot'
     @ctx.fillStyle = "#fa0"
     @canvas.style.display = 'block'
 
@@ -28,11 +26,12 @@ class Canver
   initTouchable: ->
     @canvas.addEventListener "touchstart", (e) =>
       e.preventDefault()
+      @applyColor()
       @tool.start(e)
 
     @canvas.addEventListener "touchmove", (e) =>
       e.preventDefault()
-      @setNextColour()
+      @applyColor()
       @tool.move(e)
 
     @canvas.addEventListener "touchend", (e) =>
@@ -40,13 +39,20 @@ class Canver
       @tool.end(e)
       true
 
-  setNextColour: ->
+  applyColor: ->
     @ctx.fillStyle = @colorizer.nextColour()
     @ctx.strokeStyle = @colorizer.nextColour()
 
   resizeCanvas: ->
     @canvas.width = window.innerWidth
     @canvas.height = window.innerHeight
+
+  setTool: (toolName) ->
+    # TODO set the selected tool size
+    @tr ||= new ToolRegister
+    toolClass = @tr.toolFor toolName
+    @tool = new toolClass(@canvas, @ctx)
+    @tool.init()
 
   setColor: (color) ->
     @colorizer.setColor color

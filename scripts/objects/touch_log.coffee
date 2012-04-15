@@ -4,6 +4,12 @@ class TouchLogEntry
     @current =
       x: newX
       y: newY
+  
+  # distance between current and previous points
+  distance: ->
+    return 0 unless @previous
+    sqDis = Math.pow(@previous.x - @current.x, 2) + Math.pow(@previous.y - @current.y, 2)
+    Math.sqrt sqDis
 
 class TouchLog
   constructor: ->

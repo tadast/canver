@@ -10,8 +10,7 @@ Canver = (function() {
     this.repaintBackground(this.bgColor);
     this.drawRadius = 10;
     this.colorizer = new Colorizer;
-    this.tool = new PencilTool(this.canvas, this.ctx);
-    this.tool.init();
+    this.setTool('dot');
     this.ctx.fillStyle = "#fa0";
     this.canvas.style.display = 'block';
   }
@@ -31,11 +30,12 @@ Canver = (function() {
   Canver.prototype.initTouchable = function() {
     this.canvas.addEventListener("touchstart", __bind(function(e) {
       e.preventDefault();
+      this.applyColor();
       return this.tool.start(e);
     }, this));
     this.canvas.addEventListener("touchmove", __bind(function(e) {
       e.preventDefault();
-      this.setNextColour();
+      this.applyColor();
       return this.tool.move(e);
     }, this));
     return this.canvas.addEventListener("touchend", __bind(function(e) {
@@ -44,13 +44,20 @@ Canver = (function() {
       return true;
     }, this));
   };
-  Canver.prototype.setNextColour = function() {
+  Canver.prototype.applyColor = function() {
     this.ctx.fillStyle = this.colorizer.nextColour();
     return this.ctx.strokeStyle = this.colorizer.nextColour();
   };
   Canver.prototype.resizeCanvas = function() {
     this.canvas.width = window.innerWidth;
     return this.canvas.height = window.innerHeight;
+  };
+  Canver.prototype.setTool = function(toolName) {
+    var toolClass;
+    this.tr || (this.tr = new ToolRegister);
+    toolClass = this.tr.toolFor(toolName);
+    this.tool = new toolClass(this.canvas, this.ctx);
+    return this.tool.init();
   };
   Canver.prototype.setColor = function(color) {
     return this.colorizer.setColor(color);

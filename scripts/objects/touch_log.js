@@ -8,6 +8,14 @@ TouchLogEntry = (function() {
       y: newY
     };
   };
+  TouchLogEntry.prototype.distance = function() {
+    var sqDis;
+    if (!this.previous) {
+      return 0;
+    }
+    sqDis = Math.pow(this.previous.x - this.current.x, 2) + Math.pow(this.previous.y - this.current.y, 2);
+    return Math.sqrt(sqDis);
+  };
   return TouchLogEntry;
 })();
 TouchLog = (function() {

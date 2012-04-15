@@ -52,7 +52,6 @@ canvas{
 
 #start{
   display: none;
-  color: #aaa;
   background-color: #111;
   position: fixed;
   left: 0;
@@ -64,6 +63,7 @@ canvas{
   padding: 5px;
   font-size: 26px;
   -webkit-transition: all 0.4s ease;
+  color: #aaa;
 }
 
 #start.up{
@@ -81,15 +81,19 @@ canvas{
 }
 
 #menu{
+  color: #aaa;
+  font-size: 38px;
+  text-align: center;
+  
   position: fixed;
-  margin: 0 5%;
+  margin: 0 2% 0 5%;
   bottom: 0;
   height: 50px;
   z-index: 2;
   border-top-right-radius: 10px;
   border: 1px solid #555;
   border-bottom: none;
-  width: 90%;
+  width: 93%;
   background-color: #111;
   box-sizing: border-box;
   padding: 0 10px;
@@ -102,15 +106,23 @@ canvas{
   bottom: -50px;
 }
 
+#menu .active{
+  color: #fff;
+}
+
+.tool{
+  width: 30px;
+  margin: 0 5px;
+  float: left;
+}
+
 .color, .size{
+  font-size: 22px;
   border-radius: 15px;
   width: 30px;
   height: 30px;
   margin: 10px 5px;
   float: left;
-  color: white;
-  text-align: center;
-  font-size: 150%;
   box-shadow: inset 1px 1px 2px #777;
 }
 
@@ -147,7 +159,7 @@ canvas{
 
 #reset, #saving{
   float: right;
-  font-size: 220%;
+/*  font-size: 220%;*/
   color: white;
   font-weight: 900;
   margin-left: 10px;

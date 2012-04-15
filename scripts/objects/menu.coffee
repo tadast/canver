@@ -1,15 +1,16 @@
 class Menu
   constructor: (@start, @element, @canver) ->
-    @activeColor = @element.getElementsByClassName('color active')[0]
-    @activeSize = @element.getElementsByClassName('size active')[0]
-    @initColors()
     @initSizes()
-    @initReset()
-    @initSave()
+    @initColors()
+    @initTools()
     
-    @initSwitch()
+    @initSave()
+    @initReset()
+    
+    @initSwitch() # betveen draw and save modes
 
   initColors: ->
+    @activeColor = @element.getElementsByClassName('color active')[0]
     colors = @element.getElementsByClassName('color')
     for color in colors
       color.style['background-color'] = color.dataset['color']
@@ -23,6 +24,7 @@ class Menu
         @activeColor = selectedElm
         
   initSizes: ->
+    @activeSize = @element.getElementsByClassName('size active')[0]
     sizes = @element.getElementsByClassName('size')
     for size in sizes
       size.addEventListener "touchstart", (e) =>
@@ -33,6 +35,20 @@ class Menu
         @activeSize.className = 'size'
         selectedElm.className = 'size active'
         @activeSize = selectedElm
+
+  initTools: ->
+    @activeTool = @element.getElementsByClassName('tool active')[0]
+    tools = @element.getElementsByClassName('tool')
+    for tool in tools
+      tool.addEventListener "touchstart", (e) =>
+        selectedElm = e.currentTarget
+        toolName = selectedElm.dataset['toolname']
+        @canver.setTool toolName
+        
+        @activeTool.className = 'tool'
+        selectedElm.className = 'tool active'
+        @activeTool = selectedElm
+
 
   initReset: ->
     reset = document.getElementById('reset')

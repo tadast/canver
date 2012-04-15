@@ -5,16 +5,16 @@ Menu = (function() {
     this.start = start;
     this.element = element;
     this.canver = canver;
-    this.activeColor = this.element.getElementsByClassName('color active')[0];
-    this.activeSize = this.element.getElementsByClassName('size active')[0];
-    this.initColors();
     this.initSizes();
-    this.initReset();
+    this.initColors();
+    this.initTools();
     this.initSave();
+    this.initReset();
     this.initSwitch();
   }
   Menu.prototype.initColors = function() {
     var color, colors, _i, _len, _results;
+    this.activeColor = this.element.getElementsByClassName('color active')[0];
     colors = this.element.getElementsByClassName('color');
     _results = [];
     for (_i = 0, _len = colors.length; _i < _len; _i++) {
@@ -34,6 +34,7 @@ Menu = (function() {
   };
   Menu.prototype.initSizes = function() {
     var size, sizes, _i, _len, _results;
+    this.activeSize = this.element.getElementsByClassName('size active')[0];
     sizes = this.element.getElementsByClassName('size');
     _results = [];
     for (_i = 0, _len = sizes.length; _i < _len; _i++) {
@@ -46,6 +47,25 @@ Menu = (function() {
         this.activeSize.className = 'size';
         selectedElm.className = 'size active';
         return this.activeSize = selectedElm;
+      }, this)));
+    }
+    return _results;
+  };
+  Menu.prototype.initTools = function() {
+    var tool, tools, _i, _len, _results;
+    this.activeTool = this.element.getElementsByClassName('tool active')[0];
+    tools = this.element.getElementsByClassName('tool');
+    _results = [];
+    for (_i = 0, _len = tools.length; _i < _len; _i++) {
+      tool = tools[_i];
+      _results.push(tool.addEventListener("touchstart", __bind(function(e) {
+        var selectedElm, toolName;
+        selectedElm = e.currentTarget;
+        toolName = selectedElm.dataset['toolname'];
+        this.canver.setTool(toolName);
+        this.activeTool.className = 'tool';
+        selectedElm.className = 'tool active';
+        return this.activeTool = selectedElm;
       }, this)));
     }
     return _results;
