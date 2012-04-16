@@ -5,9 +5,7 @@ class Canver
     @resizeCanvas()
     @initTouchable()
     @repaintBackground(@bgColor)
-    @drawRadius = 10
     @colorizer = new Colorizer
-    @setTool 'dot'
     @ctx.fillStyle = "#fa0"
     @canvas.style.display = 'block'
 

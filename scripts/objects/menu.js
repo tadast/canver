@@ -54,6 +54,7 @@ Menu = (function() {
   Menu.prototype.initTools = function() {
     var tool, tools, _i, _len, _results;
     this.activeTool = this.element.getElementsByClassName('tool active')[0];
+    this.canver.setTool(this.activeTool.dataset['toolname']);
     tools = this.element.getElementsByClassName('tool');
     _results = [];
     for (_i = 0, _len = tools.length; _i < _len; _i++) {
@@ -63,6 +64,7 @@ Menu = (function() {
         selectedElm = e.currentTarget;
         toolName = selectedElm.dataset['toolname'];
         this.canver.setTool(toolName);
+        this.canver.setSize(this.activeSize.dataset['size']);
         this.activeTool.className = 'tool';
         selectedElm.className = 'tool active';
         return this.activeTool = selectedElm;

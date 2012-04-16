@@ -38,12 +38,14 @@ class Menu
 
   initTools: ->
     @activeTool = @element.getElementsByClassName('tool active')[0]
+    @canver.setTool @activeTool.dataset['toolname']
     tools = @element.getElementsByClassName('tool')
     for tool in tools
       tool.addEventListener "touchstart", (e) =>
         selectedElm = e.currentTarget
         toolName = selectedElm.dataset['toolname']
         @canver.setTool toolName
+        @canver.setSize @activeSize.dataset['size']
         
         @activeTool.className = 'tool'
         selectedElm.className = 'tool active'

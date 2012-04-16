@@ -8,9 +8,7 @@ Canver = (function() {
     this.resizeCanvas();
     this.initTouchable();
     this.repaintBackground(this.bgColor);
-    this.drawRadius = 10;
     this.colorizer = new Colorizer;
-    this.setTool('dot');
     this.ctx.fillStyle = "#fa0";
     this.canvas.style.display = 'block';
   }
