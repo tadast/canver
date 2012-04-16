@@ -18,7 +18,7 @@ class DrawTool
   @toolName = 'GenericDrawTool'
   @respondsTo: (name) ->
     @toolName == name
-  
+
   constructor: (@canvas, @ctx) ->
     @drawRadius = 10
 
@@ -31,7 +31,7 @@ class DrawTool
 # Dot tool draws bubbles on every event
 class DotTool extends DrawTool
   @toolName = 'dot'
-  
+
   start: (e) ->
     for touch in e.touches
       @draw touch.clientX, touch.clientY
@@ -53,7 +53,7 @@ class DotTool extends DrawTool
 # Currently doesn't work as expected with multitouch
 class FingerTool extends DrawTool
   @toolName = 'finger'
-  
+
   init: ->
     @touchlog ||= new TouchLog
     @ctx.setLineJoin('round')
@@ -88,17 +88,26 @@ class FeatherTool extends DrawTool
     @touchlog.logEvent e
 
   move: (e) ->
-    @touchlog.logEvent e
     for touch in e.changedTouches
       log = @touchlog.forTouch(touch)
-      distance = log.distance()
-      previous = log.previous
+      continue unless log && log.previous
+
+      @ctx.lineWidth = @drawRadius
       @ctx.beginPath()
-      @ctx.lineWidth = distance / 40.0 * @drawRadius
-      @ctx.moveTo previous.x, previous.y
-      @ctx.lineTo touch.clientX, touch.clientY
-      @ctx.stroke();
+
+      # move to midpoint between last and prev points so that bezier curves don't intersect
+      startX = (log.previous.x + log.current.x) / 2
+      startY = (log.previous.y + log.current.y) / 2
+      @ctx.moveTo startX, startY
+
+      # do the same with the end point
+      endX = (log.current.x + touch.clientX) / 2
+      endY = (log.current.y + touch.clientY) / 2
+      @ctx.quadraticCurveTo(log.current.x, log.current.y, endX, endY)
+
+      @ctx.stroke()
       @ctx.closePath()
+    @touchlog.logEvent e
 
   end: (e) ->
     true

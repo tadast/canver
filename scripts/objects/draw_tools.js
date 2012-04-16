@@ -130,23 +130,26 @@ FeatherTool = (function() {
     return this.touchlog.logEvent(e);
   };
   FeatherTool.prototype.move = function(e) {
-    var distance, log, previous, touch, _i, _len, _ref, _results;
-    this.touchlog.logEvent(e);
+    var endX, endY, log, startX, startY, touch, _i, _len, _ref;
     _ref = e.changedTouches;
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       touch = _ref[_i];
       log = this.touchlog.forTouch(touch);
-      distance = log.distance();
-      previous = log.previous;
+      if (!(log && log.previous)) {
+        continue;
+      }
+      this.ctx.lineWidth = this.drawRadius;
       this.ctx.beginPath();
-      this.ctx.lineWidth = distance / 40.0 * this.drawRadius;
-      this.ctx.moveTo(previous.x, previous.y);
-      this.ctx.lineTo(touch.clientX, touch.clientY);
+      startX = (log.previous.x + log.current.x) / 2;
+      startY = (log.previous.y + log.current.y) / 2;
+      this.ctx.moveTo(startX, startY);
+      endX = (log.current.x + touch.clientX) / 2;
+      endY = (log.current.y + touch.clientY) / 2;
+      this.ctx.quadraticCurveTo(log.current.x, log.current.y, endX, endY);
       this.ctx.stroke();
-      _results.push(this.ctx.closePath());
+      this.ctx.closePath();
     }
-    return _results;
+    return this.touchlog.logEvent(e);
   };
   FeatherTool.prototype.end = function(e) {
     return true;
