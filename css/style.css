@@ -131,6 +131,12 @@ canvas{
   box-shadow: none;
 }
 
+#rainbow{
+  background: -moz-linear-gradient(top, #ff0000 0%, #2b32ff 100%);
+  background: -webkit-linear-gradient(top, #ff0000 0%,#2b32ff 100%);
+  background: linear-gradient(top, #ff0000 0%,#2b32ff 100%);
+}
+
 .size{
   background-color: #aaa;
 }
