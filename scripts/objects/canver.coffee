@@ -38,8 +38,10 @@ class Canver
       true
 
   applyColor: ->
-    @ctx.fillStyle = @colorizer.nextColour()
-    @ctx.strokeStyle = @colorizer.nextColour()
+    colour = @colorizer.nextColour()
+    @ctx.fillStyle = colour
+    @ctx.shadowColor = colour
+    @ctx.strokeStyle = colour
 
   resizeCanvas: ->
     @canvas.width = window.innerWidth

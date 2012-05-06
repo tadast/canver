@@ -1,4 +1,4 @@
-var DotTool, DrawTool, FeatherTool, FingerTool, ToolRegister;
+var DotTool, DrawTool, PencilTool, ToolRegister, WetFeather;
 var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
   for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
   function ctor() { this.constructor = child; }
@@ -9,7 +9,7 @@ var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, par
 };
 ToolRegister = (function() {
   function ToolRegister() {
-    this.tools = [DotTool, FingerTool, FeatherTool];
+    this.tools = [DotTool, WetFeather, PencilTool];
   }
   ToolRegister.prototype.toolFor = function(toolName) {
     var tool, _i, _len, _ref;
@@ -35,7 +35,7 @@ DrawTool = (function() {
     this.drawRadius = 10;
   }
   DrawTool.prototype.init = function() {
-    return true;
+    return this.ctx.shadowBlur = 0;
   };
   DrawTool.prototype.setSize = function(size) {
     return this.drawRadius = size;
@@ -79,58 +79,23 @@ DotTool = (function() {
   };
   return DotTool;
 })();
-FingerTool = (function() {
-  __extends(FingerTool, DrawTool);
-  function FingerTool() {
-    FingerTool.__super__.constructor.apply(this, arguments);
+PencilTool = (function() {
+  __extends(PencilTool, DrawTool);
+  function PencilTool() {
+    PencilTool.__super__.constructor.apply(this, arguments);
   }
-  FingerTool.toolName = 'finger';
-  FingerTool.prototype.init = function() {
-    this.touchlog || (this.touchlog = new TouchLog);
-    this.ctx.setLineJoin('round');
-    return this.ctx.setLineCap('round');
+  PencilTool.toolName = 'pencil';
+  PencilTool.prototype.init = function() {
+    PencilTool.__super__.init.call(this);
+    return this.touchlog || (this.touchlog = new TouchLog);
   };
-  FingerTool.prototype.start = function(e) {
+  PencilTool.prototype.start = function(e) {
     return this.touchlog.logEvent(e);
   };
-  FingerTool.prototype.move = function(e) {
-    var previous, touch, _i, _len, _ref, _results;
-    this.touchlog.logEvent(e);
-    _ref = e.changedTouches;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      touch = _ref[_i];
-      previous = this.touchlog.forTouch(touch).previous;
-      this.ctx.beginPath();
-      this.ctx.lineWidth = this.drawRadius;
-      this.ctx.moveTo(previous.x, previous.y);
-      this.ctx.lineTo(touch.clientX, touch.clientY);
-      this.ctx.stroke();
-      _results.push(this.ctx.closePath());
-    }
-    return _results;
-  };
-  FingerTool.prototype.end = function(e) {
-    return true;
-  };
-  return FingerTool;
-})();
-FeatherTool = (function() {
-  __extends(FeatherTool, DrawTool);
-  function FeatherTool() {
-    FeatherTool.__super__.constructor.apply(this, arguments);
-  }
-  FeatherTool.toolName = 'feather';
-  FeatherTool.prototype.init = function() {
-    this.touchlog || (this.touchlog = new TouchLog);
-    this.ctx.setLineJoin('round');
-    return this.ctx.setLineCap('round');
-  };
-  FeatherTool.prototype.start = function(e) {
-    return this.touchlog.logEvent(e);
-  };
-  FeatherTool.prototype.move = function(e) {
+  PencilTool.prototype.move = function(e) {
     var endX, endY, log, startX, startY, touch, _i, _len, _ref;
+    this.ctx.setLineCap('round');
+    this.ctx.setLineJoin('round');
     _ref = e.changedTouches;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       touch = _ref[_i];
@@ -151,8 +116,68 @@ FeatherTool = (function() {
     }
     return this.touchlog.logEvent(e);
   };
-  FeatherTool.prototype.end = function(e) {
+  PencilTool.prototype.end = function(e) {
     return true;
   };
-  return FeatherTool;
+  return PencilTool;
+})();
+WetFeather = (function() {
+  __extends(WetFeather, PencilTool);
+  function WetFeather() {
+    WetFeather.__super__.constructor.apply(this, arguments);
+  }
+  WetFeather.toolName = 'wetFeather';
+  WetFeather.prototype.init = function() {
+    WetFeather.__super__.init.call(this);
+    this.defaultAlpha = 1.0;
+    this.maxDribbleLength = 120;
+    this.probability = 0.5;
+    this.dropFactor = 1.3;
+    return this.ctx.shadowBlur = 4;
+  };
+  WetFeather.prototype.move = function(e) {
+    var touch, _i, _len, _ref;
+    WetFeather.__super__.move.call(this, e);
+    this.ctx.setLineCap('square');
+    this.ctx.globalAlpha = Math.random();
+    _ref = e.changedTouches;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      touch = _ref[_i];
+      this.dribble(touch);
+    }
+    return this.ctx.globalAlpha = this.defaultAlpha;
+  };
+  WetFeather.prototype.dribble = function(touch) {
+    var dropEndY, log, startX, startY;
+    log = this.touchlog.forTouch(touch);
+    if (!(log && log.previous)) {
+      return false;
+    }
+    if (Math.random() > this.probability) {
+      return false;
+    }
+    this.ctx.lineWidth = this.drawRadius / (this.ctx.globalAlpha * 2 + 1);
+    this.ctx.beginPath();
+    startX = log.current.x;
+    startY = log.current.y;
+    dropEndY = startY + Math.random() * this.maxDribbleLength;
+    this.ctx.moveTo(startX, startY);
+    this.ctx.lineTo(startX, dropEndY);
+    this.ctx.closePath();
+    this.ctx.stroke();
+    return this.dropletEnd(startX, dropEndY, this.ctx.lineWidth);
+  };
+  WetFeather.prototype.dropletEnd = function(x, y, width) {
+    var radius;
+    this.ctx.beginPath();
+    radius = this.dropFactor * width / 2;
+    this.ctx.moveTo(x - width / 2, y);
+    this.ctx.lineTo(x + width / 2, y);
+    this.ctx.lineTo(x + radius, y + radius * 2);
+    this.ctx.lineTo(x - radius, y + radius * 2);
+    this.ctx.arc(x, y + radius * 2, radius, 0, Math.PI, false);
+    this.ctx.closePath();
+    return this.ctx.fill();
+  };
+  return WetFeather;
 })();

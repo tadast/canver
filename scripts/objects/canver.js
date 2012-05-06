@@ -43,8 +43,11 @@ Canver = (function() {
     }, this));
   };
   Canver.prototype.applyColor = function() {
-    this.ctx.fillStyle = this.colorizer.nextColour();
-    return this.ctx.strokeStyle = this.colorizer.nextColour();
+    var colour;
+    colour = this.colorizer.nextColour();
+    this.ctx.fillStyle = colour;
+    this.ctx.shadowColor = colour;
+    return this.ctx.strokeStyle = colour;
   };
   Canver.prototype.resizeCanvas = function() {
     this.canvas.width = window.innerWidth;

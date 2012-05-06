@@ -24,11 +24,11 @@ describe("DotTool", function() {
     return expect(DotTool.respondsTo('line')).toBeFalsy();
   });
 });
-describe("FeatherTool", function() {
-  it("responds to feather", function() {
-    return expect(FeatherTool.respondsTo('feather')).toBeTruthy();
+describe("PencilTool", function() {
+  it("responds to pencil", function() {
+    return expect(PencilTool.respondsTo('pencil')).toBeTruthy();
   });
   return it("does not respond to zomg", function() {
-    return expect(FeatherTool.respondsTo('zomg')).toBeFalsy();
+    return expect(PencilTool.respondsTo('zomg')).toBeFalsy();
   });
 });

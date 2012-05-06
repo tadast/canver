@@ -1,7 +1,7 @@
 # contains info about all available tools
 class ToolRegister
   constructor: ->
-    @tools = [DotTool, FingerTool, FeatherTool]
+    @tools = [DotTool, WetFeather, PencilTool]
 
   # gives a tool class given a tool name
   toolFor: (toolName) ->
@@ -23,7 +23,7 @@ class DrawTool
     @drawRadius = 10
 
   init: ->
-    true
+    @ctx.shadowBlur = 0
 
   setSize: (size) ->
     @drawRadius = size
@@ -49,45 +49,19 @@ class DotTool extends DrawTool
     @ctx.closePath();
     @ctx.fill();
 
-# Finger tool draws like a pencil yo!
-# Currently doesn't work as expected with multitouch
-class FingerTool extends DrawTool
-  @toolName = 'finger'
-
+# Feather tool uses bezier curves to smooth out user input
+class PencilTool extends DrawTool
+  @toolName = 'pencil'
   init: ->
+    super()
     @touchlog ||= new TouchLog
-    @ctx.setLineJoin('round')
-    @ctx.setLineCap('round')
 
   start: (e) ->
     @touchlog.logEvent e
 
   move: (e) ->
-    @touchlog.logEvent e
-    for touch in e.changedTouches # migth be buggy, because logger does not know when to use changed vs all touches
-      previous = @touchlog.forTouch(touch).previous
-      @ctx.beginPath()
-      @ctx.lineWidth = @drawRadius
-      @ctx.moveTo previous.x, previous.y
-      @ctx.lineTo touch.clientX, touch.clientY
-      @ctx.stroke();
-      @ctx.closePath()
-
-  end: (e) ->
-    true
-    #@touchlog.clearFromEvent e # does not work, removes all touches, we need to remove only ended touches
-
-class FeatherTool extends DrawTool
-  @toolName = 'feather'
-  init: ->
-    @touchlog ||= new TouchLog
-    @ctx.setLineJoin('round')
-    @ctx.setLineCap('round')
-
-  start: (e) ->
-    @touchlog.logEvent e
-
-  move: (e) ->
+    @ctx.setLineCap 'round'
+    @ctx.setLineJoin 'round'
     for touch in e.changedTouches
       log = @touchlog.forTouch(touch)
       continue unless log && log.previous
@@ -111,3 +85,55 @@ class FeatherTool extends DrawTool
 
   end: (e) ->
     true
+
+class WetFeather extends PencilTool
+  @toolName = 'wetFeather'
+  init: ->
+    super()
+    @defaultAlpha = 1.0
+    @maxDribbleLength = 120 # how long is a drop
+    @probability = 0.5      # how likely is it to drip for each touch event?
+    @dropFactor = 1.3       # how much bigger is the dropplet at the end of the line?
+    @ctx.shadowBlur = 4
+
+  move: (e) ->
+    super e
+    @ctx.setLineCap 'square'
+    @ctx.globalAlpha = Math.random()
+
+    for touch in e.changedTouches
+      @dribble(touch)
+
+    @ctx.globalAlpha = @defaultAlpha
+
+  dribble: (touch) ->
+    log = @touchlog.forTouch(touch)
+    return false unless log && log.previous
+    return false if Math.random() > @probability
+    @ctx.lineWidth = @drawRadius / (@ctx.globalAlpha * 2 + 1) # the thicker the more transparent
+    @ctx.beginPath()
+
+    startX = log.current.x
+    startY = log.current.y
+    dropEndY = startY + Math.random() * @maxDribbleLength
+    @ctx.moveTo startX, startY
+    @ctx.lineTo startX, dropEndY
+    @ctx.closePath()
+    @ctx.stroke();
+
+    @dropletEnd(startX, dropEndY, @ctx.lineWidth)
+
+  dropletEnd: (x, y, width) ->
+    @ctx.beginPath()
+    radius = @dropFactor * width / 2
+
+    # Trapeze
+    @ctx.moveTo x - width/2, y
+    @ctx.lineTo x + width/2, y
+    @ctx.lineTo x + radius, y + radius*2
+    @ctx.lineTo x - radius, y + radius*2
+
+    # half circle
+    @ctx.arc x, y + radius*2, radius, 0, Math.PI, false
+    @ctx.closePath();
+    @ctx.fill();

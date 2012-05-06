@@ -21,9 +21,9 @@ describe "DotTool", ->
   it "does not respond to line", ->
     expect(DotTool.respondsTo('line')).toBeFalsy()
     
-describe "FeatherTool", ->
-  it "responds to feather", ->
-    expect(FeatherTool.respondsTo('feather')).toBeTruthy()
+describe "PencilTool", ->
+  it "responds to pencil", ->
+    expect(PencilTool.respondsTo('pencil')).toBeTruthy()
     
   it "does not respond to zomg", ->
-    expect(FeatherTool.respondsTo('zomg')).toBeFalsy()
+    expect(PencilTool.respondsTo('zomg')).toBeFalsy()
