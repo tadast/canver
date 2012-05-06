@@ -26,3 +26,11 @@ You'll need ruby and Bundler to run the tests. First, run `bundle install`. Once
 * Does not support device orientation change.
 * Does not support image saving when added to Home Screen.
 * View is broken on smaller screens e.g. iPhone.
+
+### Features
+
+![Canver's features](http://i.imgur.com/Mk09C.png)
+
+http://i.imgur.com/SsSlK.png
+http://i.imgur.com/1ziuR.png
+http://i.imgur.com/kpdRw.jpg
