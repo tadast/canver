@@ -100,17 +100,17 @@ PencilTool = (function() {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       touch = _ref[_i];
       log = this.touchlog.forTouch(touch);
-      if (!(log && log.previous)) {
+      if (!(log && log.previous())) {
         continue;
       }
       this.ctx.lineWidth = this.drawRadius;
       this.ctx.beginPath();
-      startX = (log.previous.x + log.current.x) / 2;
-      startY = (log.previous.y + log.current.y) / 2;
+      startX = (log.previous().x + log.current().x) / 2;
+      startY = (log.previous().y + log.current().y) / 2;
       this.ctx.moveTo(startX, startY);
-      endX = (log.current.x + touch.clientX) / 2;
-      endY = (log.current.y + touch.clientY) / 2;
-      this.ctx.quadraticCurveTo(log.current.x, log.current.y, endX, endY);
+      endX = (log.current().x + touch.clientX) / 2;
+      endY = (log.current().y + touch.clientY) / 2;
+      this.ctx.quadraticCurveTo(log.current().x, log.current().y, endX, endY);
       this.ctx.stroke();
       this.ctx.closePath();
     }
@@ -150,7 +150,7 @@ WetFeather = (function() {
   WetFeather.prototype.dribble = function(touch) {
     var dropEndY, log, startX, startY;
     log = this.touchlog.forTouch(touch);
-    if (!(log && log.previous)) {
+    if (!(log && log.previous())) {
       return false;
     }
     if (Math.random() > this.probability) {
@@ -158,8 +158,8 @@ WetFeather = (function() {
     }
     this.ctx.lineWidth = this.drawRadius / (this.ctx.globalAlpha * 2 + 1);
     this.ctx.beginPath();
-    startX = log.current.x;
-    startY = log.current.y;
+    startX = log.current().x;
+    startY = log.current().y;
     dropEndY = startY + Math.random() * this.maxDribbleLength;
     this.ctx.moveTo(startX, startY);
     this.ctx.lineTo(startX, dropEndY);

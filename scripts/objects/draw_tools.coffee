@@ -64,20 +64,20 @@ class PencilTool extends DrawTool
     @ctx.setLineJoin 'round'
     for touch in e.changedTouches
       log = @touchlog.forTouch(touch)
-      continue unless log && log.previous
+      continue unless log && log.previous()
 
       @ctx.lineWidth = @drawRadius
       @ctx.beginPath()
 
       # move to midpoint between last and prev points so that bezier curves don't intersect
-      startX = (log.previous.x + log.current.x) / 2
-      startY = (log.previous.y + log.current.y) / 2
+      startX = (log.previous().x + log.current().x) / 2
+      startY = (log.previous().y + log.current().y) / 2
       @ctx.moveTo startX, startY
 
       # do the same with the end point
-      endX = (log.current.x + touch.clientX) / 2
-      endY = (log.current.y + touch.clientY) / 2
-      @ctx.quadraticCurveTo(log.current.x, log.current.y, endX, endY)
+      endX = (log.current().x + touch.clientX) / 2
+      endY = (log.current().y + touch.clientY) / 2
+      @ctx.quadraticCurveTo(log.current().x, log.current().y, endX, endY)
 
       @ctx.stroke()
       @ctx.closePath()
@@ -108,13 +108,13 @@ class WetFeather extends PencilTool
 
   dribble: (touch) ->
     log = @touchlog.forTouch(touch)
-    return false unless log && log.previous
+    return false unless log && log.previous()
     return false if Math.random() > @probability
     @ctx.lineWidth = @drawRadius / (@ctx.globalAlpha * 2 + 1) # the thicker the more transparent
     @ctx.beginPath()
 
-    startX = log.current.x
-    startY = log.current.y
+    startX = log.current().x
+    startY = log.current().y
     dropEndY = startY + Math.random() * @maxDribbleLength
     @ctx.moveTo startX, startY
     @ctx.lineTo startX, dropEndY

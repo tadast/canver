@@ -1,18 +1,32 @@
 class TouchLogEntry
+  constructor: (@maxSize = 3) ->
+    @all = [] # order: [newest....oldest]
+
   updateWith: (newX, newY) ->
-    @previous = @current
-    @current =
+    newRecord =
       x: newX
       y: newY
-  
+    @all.unshift newRecord
+    @all.pop() if @length() > @maxSize
+
+  current: ->
+    @all[0]
+
+  previous: ->
+    @all[1]
+
+  length: ->
+    @all.length
+
   # distance between current and previous points
   distance: ->
-    return 0 unless @previous
-    sqDis = Math.pow(@previous.x - @current.x, 2) + Math.pow(@previous.y - @current.y, 2)
+    return 0 unless @previous()
+    sqDis = Math.pow(@previous().x - @current().x, 2) + Math.pow(@previous().y - @current().y, 2)
     Math.sqrt sqDis
 
 class TouchLog
-  constructor: ->
+  constructor: (size = 3) ->
+    @size = size # how many records should TouchLogEntry store
     @log = {}
 
   forTouch: (touch) ->
@@ -24,7 +38,7 @@ class TouchLog
       entry.updateWith(touch.clientX, touch.clientY)
 
   findOrNew: (touchId) ->
-    @log[touchId] ||= new TouchLogEntry
+    @log[touchId] ||= new TouchLogEntry @size
 
   clear: (touchId) ->
     delete @log[touchId]

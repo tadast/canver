@@ -1,25 +1,45 @@
 var TouchLog, TouchLogEntry;
 TouchLogEntry = (function() {
-  function TouchLogEntry() {}
+  function TouchLogEntry(maxSize) {
+    this.maxSize = maxSize != null ? maxSize : 3;
+    this.all = [];
+  }
   TouchLogEntry.prototype.updateWith = function(newX, newY) {
-    this.previous = this.current;
-    return this.current = {
+    var newRecord;
+    newRecord = {
       x: newX,
       y: newY
     };
+    this.all.unshift(newRecord);
+    if (this.length() > this.maxSize) {
+      return this.all.pop();
+    }
+  };
+  TouchLogEntry.prototype.current = function() {
+    return this.all[0];
+  };
+  TouchLogEntry.prototype.previous = function() {
+    return this.all[1];
+  };
+  TouchLogEntry.prototype.length = function() {
+    return this.all.length;
   };
   TouchLogEntry.prototype.distance = function() {
     var sqDis;
-    if (!this.previous) {
+    if (!this.previous()) {
       return 0;
     }
-    sqDis = Math.pow(this.previous.x - this.current.x, 2) + Math.pow(this.previous.y - this.current.y, 2);
+    sqDis = Math.pow(this.previous().x - this.current().x, 2) + Math.pow(this.previous().y - this.current().y, 2);
     return Math.sqrt(sqDis);
   };
   return TouchLogEntry;
 })();
 TouchLog = (function() {
-  function TouchLog() {
+  function TouchLog(size) {
+    if (size == null) {
+      size = 3;
+    }
+    this.size = size;
     this.log = {};
   }
   TouchLog.prototype.forTouch = function(touch) {
@@ -38,7 +58,7 @@ TouchLog = (function() {
   };
   TouchLog.prototype.findOrNew = function(touchId) {
     var _base;
-    return (_base = this.log)[touchId] || (_base[touchId] = new TouchLogEntry);
+    return (_base = this.log)[touchId] || (_base[touchId] = new TouchLogEntry(this.size));
   };
   TouchLog.prototype.clear = function(touchId) {
     return delete this.log[touchId];
