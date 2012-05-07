@@ -149,7 +149,7 @@ WetFeather = (function() {
   WetFeather.prototype.init = function() {
     WetFeather.__super__.init.call(this);
     this.maxDribbleLength = 120;
-    this.probability = 0.5;
+    this.probability = 0.3;
     this.dropFactor = 1.3;
     return this.ctx.shadowBlur = 4;
   };

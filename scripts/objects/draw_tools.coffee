@@ -107,7 +107,7 @@ class WetFeather extends PencilTool
   init: ->
     super()
     @maxDribbleLength = 120 # how long is a drop
-    @probability = 0.5      # how likely is it to drip for each touch event?
+    @probability = 0.3      # how likely is it to drip for each touch event?
     @dropFactor = 1.3       # how much bigger is the dropplet at the end of the line?
     @ctx.shadowBlur = 4
 
