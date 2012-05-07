@@ -33,6 +33,8 @@ DrawTool = (function() {
     this.canvas = canvas;
     this.ctx = ctx;
     this.drawRadius = 10;
+    this.defaultAlpha = 1.0;
+    this.ctx.globalAlpha = this.defaultAlpha;
   }
   DrawTool.prototype.init = function() {
     return this.ctx.shadowBlur = 0;
@@ -48,6 +50,11 @@ DotTool = (function() {
     DotTool.__super__.constructor.apply(this, arguments);
   }
   DotTool.toolName = 'dot';
+  DotTool.prototype.init = function() {
+    DotTool.__super__.init.call(this);
+    this.spread = 7;
+    return this.ctx.shadowBlur = 2;
+  };
   DotTool.prototype.start = function(e) {
     var touch, _i, _len, _ref, _results;
     _ref = e.touches;
@@ -72,10 +79,22 @@ DotTool = (function() {
     return true;
   };
   DotTool.prototype.draw = function(x, y) {
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, this.drawRadius, 0, Math.PI * 2, true);
-    this.ctx.closePath();
-    return this.ctx.fill();
+    var i, radius, xOff, yOff, _results;
+    _results = [];
+    for (i = 0; i <= 5; i++) {
+      this.ctx.globalAlpha = Math.random();
+      xOff = this.drawRadius * this.spread * (Math.random() - 0.5);
+      yOff = this.drawRadius * this.spread * (Math.random() - 0.5);
+      radius = this.drawRadius * (Math.random() + 0.5);
+      this.ctx.beginPath();
+      this.ctx.arc(x + xOff, y + yOff, radius, 0, Math.PI * 2, true);
+      this.ctx.closePath();
+      _results.push(this.ctx.fill());
+    }
+    return _results;
+  };
+  DotTool.prototype.setSize = function(size) {
+    return this.drawRadius = size / 2;
   };
   return DotTool;
 })();
@@ -129,7 +148,6 @@ WetFeather = (function() {
   WetFeather.toolName = 'wetFeather';
   WetFeather.prototype.init = function() {
     WetFeather.__super__.init.call(this);
-    this.defaultAlpha = 1.0;
     this.maxDribbleLength = 120;
     this.probability = 0.5;
     this.dropFactor = 1.3;

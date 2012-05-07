@@ -21,6 +21,8 @@ class DrawTool
 
   constructor: (@canvas, @ctx) ->
     @drawRadius = 10
+    @defaultAlpha = 1.0
+    @ctx.globalAlpha = @defaultAlpha
 
   init: ->
     @ctx.shadowBlur = 0
@@ -31,6 +33,11 @@ class DrawTool
 # Dot tool draws bubbles on every event
 class DotTool extends DrawTool
   @toolName = 'dot'
+
+  init: ->
+    super()
+    @spread = 7
+    @ctx.shadowBlur = 2
 
   start: (e) ->
     for touch in e.touches
@@ -44,10 +51,19 @@ class DotTool extends DrawTool
     true
 
   draw: (x, y) ->
-    @ctx.beginPath();
-    @ctx.arc x, y, @drawRadius, 0, Math.PI*2, true
-    @ctx.closePath();
-    @ctx.fill();
+    for i in [0..5]
+      @ctx.globalAlpha = Math.random()
+      xOff = @drawRadius * @spread * (Math.random() - 0.5)
+      yOff = @drawRadius * @spread * (Math.random() - 0.5)
+      radius = @drawRadius * (Math.random() + 0.5)
+
+      @ctx.beginPath();
+      @ctx.arc x + xOff, y + yOff, radius, 0, Math.PI*2, true
+      @ctx.closePath();
+      @ctx.fill();
+
+  setSize: (size) ->
+    @drawRadius = size / 2
 
 # Feather tool uses bezier curves to smooth out user input
 class PencilTool extends DrawTool
@@ -90,7 +106,6 @@ class WetFeather extends PencilTool
   @toolName = 'wetFeather'
   init: ->
     super()
-    @defaultAlpha = 1.0
     @maxDribbleLength = 120 # how long is a drop
     @probability = 0.5      # how likely is it to drip for each touch event?
     @dropFactor = 1.3       # how much bigger is the dropplet at the end of the line?
