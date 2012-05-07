@@ -1,4 +1,4 @@
-var DotTool, DrawTool, PencilTool, ToolRegister, WetFeather;
+var DotTool, DrawTool, PencilTool, ToolRegister, WebTool, WetFeather;
 var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
   for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
   function ctor() { this.constructor = child; }
@@ -9,7 +9,7 @@ var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, par
 };
 ToolRegister = (function() {
   function ToolRegister() {
-    this.tools = [DotTool, WetFeather, PencilTool];
+    this.tools = [DotTool, WetFeather, PencilTool, WebTool];
   }
   ToolRegister.prototype.toolFor = function(toolName) {
     var tool, _i, _len, _ref;
@@ -180,4 +180,49 @@ WetFeather = (function() {
     return this.ctx.fill();
   };
   return WetFeather;
+})();
+WebTool = (function() {
+  __extends(WebTool, DrawTool);
+  function WebTool() {
+    WebTool.__super__.constructor.apply(this, arguments);
+  }
+  WebTool.toolName = 'webTool';
+  WebTool.prototype.init = function() {
+    WebTool.__super__.init.call(this);
+    return this.touchlog || (this.touchlog = new TouchLog);
+  };
+  WebTool.prototype.start = function(e) {
+    return this.touchlog.logEvent(e);
+  };
+  WebTool.prototype.move = function(e) {
+    var coord, log, touch, _i, _j, _len, _len2, _ref, _ref2;
+    this.ctx.setLineCap('round');
+    this.ctx.setLineJoin('round');
+    _ref = e.changedTouches;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      touch = _ref[_i];
+      log = this.touchlog.forTouch(touch);
+      if (!(log && log.length() > 1)) {
+        continue;
+      }
+      this.ctx.lineWidth = 0.1;
+      _ref2 = log.all;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        coord = _ref2[_j];
+        this.ctx.beginPath();
+        this.ctx.moveTo(touch.clientX, touch.clientY);
+        this.ctx.lineTo(coord.x, coord.y);
+        this.ctx.closePath();
+        this.ctx.stroke();
+      }
+    }
+    return this.touchlog.logEvent(e);
+  };
+  WebTool.prototype.end = function(e) {
+    return true;
+  };
+  WebTool.prototype.setSize = function(size) {
+    return this.touchlog.size = size;
+  };
+  return WebTool;
 })();

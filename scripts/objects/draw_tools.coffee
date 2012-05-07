@@ -1,7 +1,7 @@
 # contains info about all available tools
 class ToolRegister
   constructor: ->
-    @tools = [DotTool, WetFeather, PencilTool]
+    @tools = [DotTool, WetFeather, PencilTool, WebTool]
 
   # gives a tool class given a tool name
   toolFor: (toolName) ->
@@ -137,3 +137,35 @@ class WetFeather extends PencilTool
     @ctx.arc x, y + radius*2, radius, 0, Math.PI, false
     @ctx.closePath();
     @ctx.fill();
+
+class WebTool extends DrawTool
+  @toolName = 'webTool'
+
+  init: ->
+    super()
+    @touchlog ||= new TouchLog
+
+  start: (e) ->
+    @touchlog.logEvent e
+
+  move: (e) ->
+    @ctx.setLineCap 'round'
+    @ctx.setLineJoin 'round'
+    for touch in e.changedTouches
+      log = @touchlog.forTouch(touch)
+      continue unless log && log.length() > 1
+      @ctx.lineWidth = 0.1
+      for coord in log.all
+        @ctx.beginPath()
+        @ctx.moveTo touch.clientX, touch.clientY
+        @ctx.lineTo coord.x, coord.y
+        @ctx.closePath()
+        @ctx.stroke();
+
+    @touchlog.logEvent e
+
+  end: (e) ->
+    true
+
+  setSize: (size) ->
+    @touchlog.size = size # store more points for the lines to join to
