@@ -1,19 +1,19 @@
 describe("ToolRegister", function() {
   var tr;
   tr = new ToolRegister;
-  it("gives FingerTool when you ask for a finger", function() {
-    return expect(tr.toolFor('finger')).toEqual(FingerTool);
+  it("gives WetFeather when you ask for a finger", function() {
+    return expect(tr.toolFor('wetFeather')).toEqual(WetFeather);
   });
   return it("gives DotTool when you ask for a dot", function() {
     return expect(tr.toolFor('dot')).toEqual(DotTool);
   });
 });
-describe("FingerTool", function() {
-  it("responds to finger", function() {
-    return expect(FingerTool.respondsTo('finger')).toBeTruthy();
+describe("WetFeather", function() {
+  it("responds to wetFeather", function() {
+    return expect(WetFeather.respondsTo('wetFeather')).toBeTruthy();
   });
   return it("does not respond to toe", function() {
-    return expect(FingerTool.respondsTo('toe')).toBeFalsy();
+    return expect(WetFeather.respondsTo('toe')).toBeFalsy();
   });
 });
 describe("DotTool", function() {

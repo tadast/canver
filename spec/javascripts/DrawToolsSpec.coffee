@@ -1,18 +1,18 @@
 describe "ToolRegister", ->
   tr = new ToolRegister
-  it "gives FingerTool when you ask for a finger", ->
-    expect(tr.toolFor('finger')).toEqual FingerTool
+  it "gives WetFeather when you ask for a finger", ->
+    expect(tr.toolFor('wetFeather')).toEqual WetFeather
 
   it "gives DotTool when you ask for a dot", ->
     expect(tr.toolFor('dot')).toEqual DotTool
 
 
-describe "FingerTool", ->
-  it "responds to finger", ->
-    expect(FingerTool.respondsTo('finger')).toBeTruthy()
+describe "WetFeather", ->
+  it "responds to wetFeather", ->
+    expect(WetFeather.respondsTo('wetFeather')).toBeTruthy()
     
   it "does not respond to toe", ->
-    expect(FingerTool.respondsTo('toe')).toBeFalsy()
+    expect(WetFeather.respondsTo('toe')).toBeFalsy()
     
 describe "DotTool", ->
   it "responds to dot", ->
