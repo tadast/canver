@@ -138,6 +138,8 @@ class WetFeather extends PencilTool
     @ctx.closePath();
     @ctx.fill();
 
+# Registers N last poins and when a new one is added,
+# joins them with thin lines drawing web-like structures
 class WebTool extends DrawTool
   @toolName = 'webTool'
 
