@@ -19,11 +19,11 @@ Menu = (function() {
     _results = [];
     for (_i = 0, _len = colors.length; _i < _len; _i++) {
       color = colors[_i];
-      color.style['background-color'] = color.dataset['color'];
+      color.style['background-color'] = color.attributes['data-color'].value;
       _results.push(color.addEventListener("touchstart", __bind(function(e) {
         var selectedElm;
         selectedElm = e.currentTarget;
-        color = selectedElm.dataset['color'];
+        color = selectedElm.attributes['data-color'].value;
         this.canver.setColor(color);
         this.activeColor.className = 'color';
         selectedElm.className = 'color active';
@@ -42,7 +42,7 @@ Menu = (function() {
       _results.push(size.addEventListener("touchstart", __bind(function(e) {
         var selectedElm;
         selectedElm = e.currentTarget;
-        size = selectedElm.dataset['size'];
+        size = selectedElm.attributes['data-size'].value;
         this.canver.setSize(size);
         this.activeSize.className = 'size';
         selectedElm.className = 'size active';
@@ -54,7 +54,7 @@ Menu = (function() {
   Menu.prototype.initTools = function() {
     var tool, tools, _i, _len, _results;
     this.activeTool = this.element.getElementsByClassName('tool active')[0];
-    this.canver.setTool(this.activeTool.dataset['toolname']);
+    this.canver.setTool(this.activeTool.attributes['data-toolname'].value);
     tools = this.element.getElementsByClassName('tool');
     _results = [];
     for (_i = 0, _len = tools.length; _i < _len; _i++) {
@@ -62,9 +62,9 @@ Menu = (function() {
       _results.push(tool.addEventListener("touchstart", __bind(function(e) {
         var selectedElm, toolName;
         selectedElm = e.currentTarget;
-        toolName = selectedElm.dataset['toolname'];
+        toolName = selectedElm.attributes['data-toolname'].value;
         this.canver.setTool(toolName);
-        this.canver.setSize(this.activeSize.dataset['size']);
+        this.canver.setSize(this.activeSize.attributes['data-size'].value);
         this.activeTool.className = 'tool';
         selectedElm.className = 'tool active';
         return this.activeTool = selectedElm;

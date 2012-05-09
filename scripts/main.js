@@ -16,7 +16,7 @@ window.onload = function() {
   }
   return bgSetup.addEventListener("touchstart", __bind(function(e) {
     var colorClicked;
-    colorClicked = e.target.dataset.color;
+    colorClicked = e.target.attributes['data-color'].value;
     bgSetup.style.display = 'none';
     this.canver = new Canver(canvas, colorClicked, window.devicePixelRatio);
     return this.menu = new Menu(start, menu, this.canver);
