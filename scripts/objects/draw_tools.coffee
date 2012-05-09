@@ -106,9 +106,9 @@ class WetFeather extends PencilTool
   @toolName = 'wetFeather'
   init: ->
     super()
-    @maxDribbleLength = 120 # how long is a drop
-    @probability = 0.3      # how likely is it to drip for each touch event?
-    @dropFactor = 1.3       # how much bigger is the dropplet at the end of the line?
+    @dribbleLength = 100  # how long is a drop
+    @probability = 0.3   # how likely is it to drip for each touch event?
+    @dropFactor = 1.3    # how much bigger is the dropplet at the end of the line?
     @ctx.shadowBlur = 4
 
   move: (e) ->
@@ -130,7 +130,7 @@ class WetFeather extends PencilTool
 
     startX = log.current().x
     startY = log.current().y
-    dropEndY = startY + Math.random() * @maxDribbleLength
+    dropEndY = startY + Math.random() * (@dribbleLength + @drawRadius * 4)
     @ctx.moveTo startX, startY
     @ctx.lineTo startX, dropEndY
     @ctx.closePath()

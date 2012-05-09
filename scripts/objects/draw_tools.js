@@ -148,7 +148,7 @@ WetFeather = (function() {
   WetFeather.toolName = 'wetFeather';
   WetFeather.prototype.init = function() {
     WetFeather.__super__.init.call(this);
-    this.maxDribbleLength = 120;
+    this.dribbleLength = 100;
     this.probability = 0.3;
     this.dropFactor = 1.3;
     return this.ctx.shadowBlur = 4;
@@ -178,7 +178,7 @@ WetFeather = (function() {
     this.ctx.beginPath();
     startX = log.current().x;
     startY = log.current().y;
-    dropEndY = startY + Math.random() * this.maxDribbleLength;
+    dropEndY = startY + Math.random() * (this.dribbleLength + this.drawRadius * 4);
     this.ctx.moveTo(startX, startY);
     this.ctx.lineTo(startX, dropEndY);
     this.ctx.closePath();
