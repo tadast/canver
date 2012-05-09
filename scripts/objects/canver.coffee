@@ -1,6 +1,6 @@
 # The main class
 class Canver
-  constructor: (@canvas, @bgColor) ->
+  constructor: (@canvas, @bgColor, @retinaMultiplier = 1) ->
     @ctx = @canvas.getContext "2d"
     @resizeCanvas()
     @initTouchable()
@@ -11,7 +11,7 @@ class Canver
 
   hide: ->
     @canvas.style.display = 'none'
-    
+
   show: ->
     @canvas.style.display = 'block'
 
@@ -44,8 +44,8 @@ class Canver
     @ctx.strokeStyle = colour
 
   resizeCanvas: ->
-    @canvas.width = window.innerWidth
-    @canvas.height = window.innerHeight
+    @canvas.width = window.innerWidth * @retinaMultiplier
+    @canvas.height = window.innerHeight * @retinaMultiplier
 
   setTool: (toolName) ->
     # TODO set the selected tool size
@@ -56,10 +56,10 @@ class Canver
 
   setColor: (color) ->
     @colorizer.setColor color
-    
+
   setSize: (size) ->
     @tool.setSize size
-    
+
   switchSaveMode: (imageElm) ->
     if window.navigator.standalone
       alert "iOS does not support image saving in Home Screen mode. You can make a screenshot by holding down Home and Power buttons."

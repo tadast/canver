@@ -18,7 +18,7 @@ window.onload = function() {
     var colorClicked;
     colorClicked = e.target.dataset.color;
     bgSetup.style.display = 'none';
-    this.canver = new Canver(canvas, colorClicked);
+    this.canver = new Canver(canvas, colorClicked, window.devicePixelRatio);
     return this.menu = new Menu(start, menu, this.canver);
   }, this));
 };

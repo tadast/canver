@@ -1,9 +1,10 @@
 var Canver;
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 Canver = (function() {
-  function Canver(canvas, bgColor) {
+  function Canver(canvas, bgColor, retinaMultiplier) {
     this.canvas = canvas;
     this.bgColor = bgColor;
+    this.retinaMultiplier = retinaMultiplier != null ? retinaMultiplier : 1;
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
     this.initTouchable();
@@ -50,8 +51,8 @@ Canver = (function() {
     return this.ctx.strokeStyle = colour;
   };
   Canver.prototype.resizeCanvas = function() {
-    this.canvas.width = window.innerWidth;
-    return this.canvas.height = window.innerHeight;
+    this.canvas.width = window.innerWidth * this.retinaMultiplier;
+    return this.canvas.height = window.innerHeight * this.retinaMultiplier;
   };
   Canver.prototype.setTool = function(toolName) {
     var toolClass;

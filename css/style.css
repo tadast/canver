@@ -23,9 +23,9 @@ canvas{
   text-align: center;
 }
 
-
 .bgSelect{
   display: inline-block;
+  float: left;
   width: 33%;
   min-height: 100%;
 }
@@ -40,6 +40,7 @@ canvas{
 
 #setBgGrey{
   background-color: #333;
+  float: right;
 }
 
 /* Image for saving */
@@ -51,6 +52,7 @@ canvas{
 /* Menu stuff */
 
 #start{
+  font-size: 1.6em;
   display: none;
   background-color: #111;
   position: fixed;
@@ -61,7 +63,6 @@ canvas{
   z-index: 2;
   border-top: 1px solid #555;
   padding: 5px;
-  font-size: 26px;
   -webkit-transition: all 0.4s ease;
   color: #aaa;
 }
@@ -81,8 +82,8 @@ canvas{
 }
 
 #menu{
+  font-size: 2.4em;
   color: #aaa;
-  font-size: 38px;
   text-align: center;
 
   position: fixed;
@@ -117,7 +118,6 @@ canvas{
 }
 
 .color, .size{
-  font-size: 22px;
   border-radius: 15px;
   width: 30px;
   height: 30px;
@@ -165,7 +165,6 @@ canvas{
 
 #reset, #saving{
   float: right;
-/*  font-size: 220%;*/
   color: white;
   font-weight: 900;
   margin-left: 10px;
@@ -176,13 +175,6 @@ canvas{
   border-left: 1px solid #555;
   float: left;
   margin: 0 10px;
-}
-
-/* Unsupported page */
-
-#sorry{
-  text-align: center;
-  padding-top: 20%;
 }
 
 /* Animations */
@@ -196,4 +188,52 @@ canvas{
      -webkit-transform: rotate(90deg) translateX(52%);
      margin-left: -50%;
    }
+}
+
+/* retina and ipad */
+@media only screen and (-webkit-min-device-pixel-ratio: 2) and (min-width: 768px){
+  body{
+    font-size: 32px;
+  }
+  #start, #menu{
+    height: 100px;
+  }
+
+  #start.up{
+    height: 70px;
+  }
+
+  .color, .size, .tool{
+    width: 60px;
+    height: 60px;
+  }
+
+  .color, .size{
+    margin: 20px 10px;
+  }
+
+  #smallSize{
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+  }
+
+  #mediumSize{
+    height: 52px;
+    width: 52px;
+    border-radius: 26px;
+  }
+
+  #bigSize{
+    height: 72px;
+    width: 72px;
+    border-radius: 36px;
+  }
+}
+
+/* Unsupported page */
+
+#sorry{
+  text-align: center;
+  padding-top: 20%;
 }

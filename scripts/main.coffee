@@ -18,5 +18,6 @@ window.onload = ->
   bgSetup.addEventListener "touchstart", (e) =>
     colorClicked = e.target.dataset.color
     bgSetup.style.display = 'none'
-    @canver = new Canver canvas, colorClicked
+    @canver = new Canver canvas, colorClicked, window.devicePixelRatio
+    # @canver = new Canver canvas, colorClicked
     @menu = new Menu start, menu, @canver
