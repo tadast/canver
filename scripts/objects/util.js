@@ -1,10 +1,10 @@
-var Util;
-Util = (function() {
-  function Util() {}
-  Util.noScrollingOn = function(elm) {
-    return elm.addEventListener("touchmove", function(e) {
-      return e.preventDefault();
-    });
-  };
-  return Util;
-})();
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+class Util {
+  static noScrollingOn(elm) {
+    return elm.addEventListener("touchmove", e => e.preventDefault());
+  }
+}

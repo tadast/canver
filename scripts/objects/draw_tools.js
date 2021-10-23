@@ -1,232 +1,237 @@
-var DotTool, DrawTool, PencilTool, ToolRegister, WebTool, WetFeather;
-var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
-  for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
-  function ctor() { this.constructor = child; }
-  ctor.prototype = parent.prototype;
-  child.prototype = new ctor;
-  child.__super__ = parent.prototype;
-  return child;
-};
-ToolRegister = (function() {
-  function ToolRegister() {
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// contains info about all available tools
+class ToolRegister {
+  constructor() {
     this.tools = [DotTool, WetFeather, PencilTool, WebTool];
   }
-  ToolRegister.prototype.toolFor = function(toolName) {
-    var tool, _i, _len, _ref;
-    _ref = this.tools;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      tool = _ref[_i];
-      if (tool.toolName === toolName) {
-        return tool;
-      }
+
+  // gives a tool class given a tool name
+  toolFor(toolName) {
+    for (let tool of Array.from(this.tools)) {
+      if (tool.toolName === toolName) { return tool; }
     }
-    return alert("Tool " + toolName + " not found");
-  };
-  return ToolRegister;
-})();
-DrawTool = (function() {
-  DrawTool.toolName = 'GenericDrawTool';
-  DrawTool.respondsTo = function(name) {
+    return alert(`Tool ${toolName} not found`);
+  }
+}
+
+// A base class for drawing tools
+// A drawing tool must have three methods:
+//   start - is called when a touch event starts
+//   move  - is called when a touch moves
+//   end   - is called when a touch event ends
+class DrawTool {
+  static initClass() {
+    this.toolName = 'GenericDrawTool';
+  }
+  static respondsTo(name) {
     return this.toolName === name;
-  };
-  function DrawTool(canvas, ctx) {
+  }
+
+  constructor(canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
     this.drawRadius = 10;
     this.defaultAlpha = 1.0;
     this.ctx.globalAlpha = this.defaultAlpha;
   }
-  DrawTool.prototype.init = function() {
+
+  init() {
     return this.ctx.shadowBlur = 0;
-  };
-  DrawTool.prototype.setSize = function(size) {
-    return this.drawRadius = size;
-  };
-  return DrawTool;
-})();
-DotTool = (function() {
-  __extends(DotTool, DrawTool);
-  function DotTool() {
-    DotTool.__super__.constructor.apply(this, arguments);
   }
-  DotTool.toolName = 'dot';
-  DotTool.prototype.init = function() {
-    DotTool.__super__.init.call(this);
+
+  setSize(size) {
+    return this.drawRadius = size;
+  }
+}
+DrawTool.initClass();
+
+// Dot tool draws bubbles on every event
+class DotTool extends DrawTool {
+  static initClass() {
+    this.toolName = 'dot';
+  }
+
+  init() {
+    super.init();
     this.spread = 7;
     return this.ctx.shadowBlur = 2;
-  };
-  DotTool.prototype.start = function(e) {
-    var touch, _i, _len, _ref, _results;
-    _ref = e.touches;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      touch = _ref[_i];
-      _results.push(this.draw(touch.clientX, touch.clientY));
-    }
-    return _results;
-  };
-  DotTool.prototype.move = function(e) {
-    var touch, _i, _len, _ref, _results;
-    _ref = e.changedTouches;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      touch = _ref[_i];
-      _results.push(this.draw(touch.clientX, touch.clientY));
-    }
-    return _results;
-  };
-  DotTool.prototype.end = function(e) {
-    return true;
-  };
-  DotTool.prototype.draw = function(x, y) {
-    var i, radius, xOff, yOff, _results;
-    _results = [];
-    for (i = 0; i <= 5; i++) {
-      this.ctx.globalAlpha = Math.random();
-      xOff = this.drawRadius * this.spread * (Math.random() - 0.5);
-      yOff = this.drawRadius * this.spread * (Math.random() - 0.5);
-      radius = this.drawRadius * (Math.random() + 0.5);
-      this.ctx.beginPath();
-      this.ctx.arc(x + xOff, y + yOff, radius, 0, Math.PI * 2, true);
-      this.ctx.closePath();
-      _results.push(this.ctx.fill());
-    }
-    return _results;
-  };
-  DotTool.prototype.setSize = function(size) {
-    return this.drawRadius = size / 2;
-  };
-  return DotTool;
-})();
-PencilTool = (function() {
-  __extends(PencilTool, DrawTool);
-  function PencilTool() {
-    PencilTool.__super__.constructor.apply(this, arguments);
   }
-  PencilTool.toolName = 'pencil';
-  PencilTool.prototype.init = function() {
-    PencilTool.__super__.init.call(this);
+
+  start(e) {
+    return Array.from(e.touches).map((touch) =>
+      this.draw(touch.clientX, touch.clientY));
+  }
+
+  move(e) {
+    return Array.from(e.changedTouches).map((touch) =>
+      this.draw(touch.clientX, touch.clientY));
+  }
+
+  end(e) {
+    return true;
+  }
+
+  draw(x, y) {
+    return (() => {
+      const result = [];
+      for (let i = 0; i <= 5; i++) {
+        this.ctx.globalAlpha = Math.random();
+        const xOff = this.drawRadius * this.spread * (Math.random() - 0.5);
+        const yOff = this.drawRadius * this.spread * (Math.random() - 0.5);
+        const radius = this.drawRadius * (Math.random() + 0.5);
+
+        this.ctx.beginPath();
+        this.ctx.arc(x + xOff, y + yOff, radius, 0, Math.PI*2, true);
+        this.ctx.closePath();
+        result.push(this.ctx.fill());
+      }
+      return result;
+    })();
+  }
+
+  setSize(size) {
+    return this.drawRadius = size / 2;
+  }
+}
+DotTool.initClass();
+
+// Feather tool uses bezier curves to smooth out user input
+class PencilTool extends DrawTool {
+  static initClass() {
+    this.toolName = 'pencil';
+  }
+  init() {
+    super.init();
     return this.touchlog || (this.touchlog = new TouchLog);
-  };
-  PencilTool.prototype.start = function(e) {
+  }
+
+  start(e) {
     return this.touchlog.logEvent(e);
-  };
-  PencilTool.prototype.move = function(e) {
-    var endX, endY, log, startX, startY, touch, _i, _len, _ref;
+  }
+
+  move(e) {
     this.ctx.setLineCap('round');
     this.ctx.setLineJoin('round');
-    _ref = e.changedTouches;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      touch = _ref[_i];
-      log = this.touchlog.forTouch(touch);
-      if (!(log && log.previous())) {
-        continue;
-      }
+    for (let touch of Array.from(e.changedTouches)) {
+      const log = this.touchlog.forTouch(touch);
+      if (!log || !log.previous()) { continue; }
+
       this.ctx.lineWidth = this.drawRadius;
       this.ctx.beginPath();
-      startX = (log.previous().x + log.current().x) / 2;
-      startY = (log.previous().y + log.current().y) / 2;
+
+      // move to midpoint between last and prev points so that bezier curves don't intersect
+      const startX = (log.previous().x + log.current().x) / 2;
+      const startY = (log.previous().y + log.current().y) / 2;
       this.ctx.moveTo(startX, startY);
-      endX = (log.current().x + touch.clientX) / 2;
-      endY = (log.current().y + touch.clientY) / 2;
+
+      // do the same with the end point
+      const endX = (log.current().x + touch.clientX) / 2;
+      const endY = (log.current().y + touch.clientY) / 2;
       this.ctx.quadraticCurveTo(log.current().x, log.current().y, endX, endY);
+
       this.ctx.stroke();
       this.ctx.closePath();
     }
     return this.touchlog.logEvent(e);
-  };
-  PencilTool.prototype.end = function(e) {
-    return true;
-  };
-  return PencilTool;
-})();
-WetFeather = (function() {
-  __extends(WetFeather, PencilTool);
-  function WetFeather() {
-    WetFeather.__super__.constructor.apply(this, arguments);
   }
-  WetFeather.toolName = 'wetFeather';
-  WetFeather.prototype.init = function() {
-    WetFeather.__super__.init.call(this);
-    this.dribbleLength = 100;
-    this.probability = 0.3;
-    this.dropFactor = 1.3;
+
+  end(e) {
+    return true;
+  }
+}
+PencilTool.initClass();
+
+class WetFeather extends PencilTool {
+  static initClass() {
+    this.toolName = 'wetFeather';
+  }
+  init() {
+    super.init();
+    this.dribbleLength = 100;  // how long is a drop
+    this.probability = 0.3;   // how likely is it to drip for each touch event?
+    this.dropFactor = 1.3;    // how much bigger is the dropplet at the end of the line?
     return this.ctx.shadowBlur = 4;
-  };
-  WetFeather.prototype.move = function(e) {
-    var touch, _i, _len, _ref;
-    WetFeather.__super__.move.call(this, e);
+  }
+
+  move(e) {
+    super.move(e);
     this.ctx.setLineCap('square');
     this.ctx.globalAlpha = Math.random();
-    _ref = e.changedTouches;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      touch = _ref[_i];
+
+    for (let touch of Array.from(e.changedTouches)) {
       this.dribble(touch);
     }
+
     return this.ctx.globalAlpha = this.defaultAlpha;
-  };
-  WetFeather.prototype.dribble = function(touch) {
-    var dropEndY, log, startX, startY;
-    log = this.touchlog.forTouch(touch);
-    if (!(log && log.previous())) {
-      return false;
-    }
-    if (Math.random() > this.probability) {
-      return false;
-    }
-    this.ctx.lineWidth = this.drawRadius / (this.ctx.globalAlpha * 2 + 1);
+  }
+
+  dribble(touch) {
+    const log = this.touchlog.forTouch(touch);
+    if (!log || !log.previous()) { return false; }
+    if (Math.random() > this.probability) { return false; }
+    this.ctx.lineWidth = this.drawRadius / ((this.ctx.globalAlpha * 2) + 1); // the thicker the more transparent
     this.ctx.beginPath();
-    startX = log.current().x;
-    startY = log.current().y;
-    dropEndY = startY + Math.random() * (this.dribbleLength + this.drawRadius * 4);
+
+    const startX = log.current().x;
+    const startY = log.current().y;
+    const dropEndY = startY + (Math.random() * (this.dribbleLength + (this.drawRadius * 4)));
     this.ctx.moveTo(startX, startY);
     this.ctx.lineTo(startX, dropEndY);
     this.ctx.closePath();
     this.ctx.stroke();
+
     return this.dropletEnd(startX, dropEndY, this.ctx.lineWidth);
-  };
-  WetFeather.prototype.dropletEnd = function(x, y, width) {
-    var radius;
+  }
+
+  dropletEnd(x, y, width) {
     this.ctx.beginPath();
-    radius = this.dropFactor * width / 2;
-    this.ctx.moveTo(x - width / 2, y);
-    this.ctx.lineTo(x + width / 2, y);
-    this.ctx.lineTo(x + radius, y + radius * 2);
-    this.ctx.lineTo(x - radius, y + radius * 2);
-    this.ctx.arc(x, y + radius * 2, radius, 0, Math.PI, false);
+    const radius = (this.dropFactor * width) / 2;
+
+    // Trapeze
+    this.ctx.moveTo(x - (width/2), y);
+    this.ctx.lineTo(x + (width/2), y);
+    this.ctx.lineTo(x + radius, y + (radius*2));
+    this.ctx.lineTo(x - radius, y + (radius*2));
+
+    // half circle
+    this.ctx.arc(x, y + (radius*2), radius, 0, Math.PI, false);
     this.ctx.closePath();
     return this.ctx.fill();
-  };
-  return WetFeather;
-})();
-WebTool = (function() {
-  __extends(WebTool, DrawTool);
-  function WebTool() {
-    WebTool.__super__.constructor.apply(this, arguments);
   }
-  WebTool.toolName = 'webTool';
-  WebTool.prototype.init = function() {
-    WebTool.__super__.init.call(this);
+}
+WetFeather.initClass();
+
+// Registers N last poins and when a new one is added,
+// joins them with thin lines drawing web-like structures
+class WebTool extends DrawTool {
+  static initClass() {
+    this.toolName = 'webTool';
+  }
+
+  init() {
+    super.init();
     return this.touchlog || (this.touchlog = new TouchLog);
-  };
-  WebTool.prototype.start = function(e) {
+  }
+
+  start(e) {
     return this.touchlog.logEvent(e);
-  };
-  WebTool.prototype.move = function(e) {
-    var coord, log, touch, _i, _j, _len, _len2, _ref, _ref2;
+  }
+
+  move(e) {
     this.ctx.setLineCap('round');
     this.ctx.setLineJoin('round');
-    _ref = e.changedTouches;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      touch = _ref[_i];
-      log = this.touchlog.forTouch(touch);
-      if (!(log && log.length() > 1)) {
-        continue;
-      }
+    for (let touch of Array.from(e.changedTouches)) {
+      const log = this.touchlog.forTouch(touch);
+      if (!log || !(log.length() > 1)) { continue; }
       this.ctx.lineWidth = 0.1;
-      _ref2 = log.all;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        coord = _ref2[_j];
+      for (let coord of Array.from(log.all)) {
         this.ctx.beginPath();
         this.ctx.moveTo(touch.clientX, touch.clientY);
         this.ctx.lineTo(coord.x, coord.y);
@@ -234,13 +239,16 @@ WebTool = (function() {
         this.ctx.stroke();
       }
     }
+
     return this.touchlog.logEvent(e);
-  };
-  WebTool.prototype.end = function(e) {
+  }
+
+  end(e) {
     return true;
-  };
-  WebTool.prototype.setSize = function(size) {
+  }
+
+  setSize(size) {
     return this.touchlog.size = size;
-  };
-  return WebTool;
-})();
+  }
+}
+WebTool.initClass(); // store more points for the lines to join to
