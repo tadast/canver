@@ -1,7 +1,7 @@
 ## Canver
 
 Canver is a paint application. It was developed for iPads, but should work (more or less) on any touchscreen device.
-You can [try it live here.](http://tadast.github.com/canver)
+You can [try it live here.](http://codeme.lt/canver)
 
 It is just a simple client-side application based on HTML5 canvas, written purely in HTML, JavaScript and CSS.
 
