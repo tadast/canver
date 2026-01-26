@@ -89,7 +89,7 @@ class Menu {
   }
 
   initSwitch() {
-    this.start.style.display = 'block';
+    this.start.style.display = 'flex';
     return this.addInputListener(this.start, e => {
       e.preventDefault();
       return this.toggleHide();

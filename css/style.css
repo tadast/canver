@@ -21,6 +21,80 @@ canvas{
   top: 0;
   height: 100%;
   text-align: center;
+  position: relative;
+}
+
+#backgroundSetupBox{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px 60px;
+  border-radius: 20px;
+  pointer-events: none;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+#backgroundSetupBox::before{
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: conic-gradient(
+    from 0deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3,
+    #ff0000
+  );
+  animation: rotateBorder 3s linear infinite;
+  z-index: -1;
+}
+
+#backgroundSetupBox::after{
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 16px;
+  z-index: -1;
+}
+
+@keyframes rotateBorder {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#backgroundSetupTitle{
+  color: #fff;
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0 0 16px 0;
+  text-align: center;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+#backgroundSetupHeading{
+  color: #fff;
+  font-size: 20px;
+  font-weight: normal;
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .bgSelect{
@@ -52,18 +126,21 @@ canvas{
 /* Menu stuff */
 
 #start{
-  font-size: 1.6em;
   display: none;
   background-color: #111;
   position: fixed;
   left: 0;
   bottom: 0;
   height: 50px;
+  min-width: 50px;
   z-index: 2;
   border-top: 1px solid #555;
-  padding: 5px;
+  padding: 0;
   transition: all 0.4s ease;
   color: #aaa;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
 }
 
 #start.up{
@@ -72,21 +149,19 @@ canvas{
   border-top-right-radius: 10px;
 }
 
-#start:before{
-  content: '▲';
-  padding: 5px;
+#start svg{
+  width: 24px;
+  height: 24px;
+  fill: #aaa;
+  transition: transform 0.4s ease;
 }
 
-#start.down:before{
-  content: '▼';
-  padding: 5px;
+#start.down svg{
+  transform: rotate(180deg);
 }
 
 #menu{
-  font-size: 2.4em;
   color: #aaa;
-  text-align: center;
-
   position: fixed;
   margin: 0 2% 0 5%;
   bottom: 0;
@@ -96,15 +171,23 @@ canvas{
   border: 1px solid #555;
   border-bottom: none;
   width: 93%;
+  max-width: calc(100% - 7%);
   background-color: #111;
   box-sizing: border-box;
   padding: 0 10px;
-  -webkit-transition: all 0.4s ease;
-  -webkit-transform: scaleX(1);
+  transition: all 0.4s ease;
+  transform: scaleX(1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 #menu.hidden{
-  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
   bottom: -50px;
 }
 
@@ -112,19 +195,47 @@ canvas{
   color: #fff;
 }
 
+#menu .active svg{
+  fill: #fff;
+}
+
+#sizes, #colors, #tools{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
 .tool{
   width: 30px;
-  margin: 0 5px;
-  float: left;
+  height: 30px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tool svg{
+  width: 24px;
+  height: 24px;
+  fill: #aaa;
+  transition: fill 0.2s ease;
+}
+
+.tool.active svg{
+  fill: #fff;
 }
 
 .color, .size{
   border-radius: 15px;
   width: 30px;
   height: 30px;
-  margin: 10px 5px;
-  float: left;
+  margin: 0;
+  flex-shrink: 0;
   box-shadow: inset 1px 1px 2px #777;
+  cursor: pointer;
 }
 
 .color.active{
@@ -135,7 +246,7 @@ canvas{
 #rainbow{
   background: -moz-linear-gradient(top, #ff0000 0%, #2b32ff 100%);
   background: -webkit-linear-gradient(top, #ff0000 0%,#2b32ff 100%);
-  background: linear-gradient(top, #ff0000 0%,#2b32ff 100%);
+  background: linear-gradient(to bottom, #ff0000 0%,#2b32ff 100%);
 }
 
 .size{
@@ -165,17 +276,29 @@ canvas{
 }
 
 #reset, #saving{
-  float: right;
   color: white;
   font-weight: 900;
-  margin-left: 10px;
+  margin-left: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+#reset svg, #saving svg{
+  width: 24px;
+  height: 24px;
+  fill: white;
 }
 
 .separator{
-  height: 100%;
+  height: 70%;
   border-left: 1px solid #555;
-  float: left;
-  margin: 0 10px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 /* Animations */
@@ -191,9 +314,41 @@ canvas{
    }
 }
 
+/* Responsive design */
+@media only screen and (max-width: 480px){
+  #menu{
+    padding: 0 5px;
+    gap: 5px;
+  }
+
+  #sizes, #colors, #tools{
+    gap: 3px;
+  }
+
+  .tool, .color, .size{
+    width: 28px;
+    height: 28px;
+  }
+
+  .tool svg, #reset svg, #saving svg{
+    width: 20px;
+    height: 20px;
+  }
+}
+
 /* retina and ipad */
 @media only screen and (-webkit-min-device-pixel-ratio: 2) and (min-width: 768px){
   body{
+    font-size: 32px;
+  }
+  #backgroundSetupBox{
+    padding: 60px 90px;
+  }
+  #backgroundSetupTitle{
+    font-size: 72px;
+    letter-spacing: 6px;
+  }
+  #backgroundSetupHeading{
     font-size: 32px;
   }
   #start, #menu{
@@ -204,13 +359,24 @@ canvas{
     height: 70px;
   }
 
+  #start svg{
+    width: 48px;
+    height: 48px;
+  }
+
   .color, .size, .tool{
     width: 60px;
     height: 60px;
   }
 
-  .color, .size{
-    margin: 20px 10px;
+  .tool svg{
+    width: 48px;
+    height: 48px;
+  }
+
+  #reset svg, #saving svg{
+    width: 48px;
+    height: 48px;
   }
 
   #smallSize{

@@ -17,7 +17,11 @@
   <link rel="apple-touch-icon" href="images/icon.png"/>
 </head>
 <body>
-  <div id='start' class='up'></div>
+  <div id='start' class='up'>
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+    </svg>
+  </div>
   <div id='menu' class='hidden'>
     <div id='sizes'>
       <div id='bigSize'    class='size' data-size='25'></div>
@@ -36,17 +40,49 @@
     </div>
     <div class='separator'></div>
       <div id='tools'>
-        <div class='tool active' data-toolname='pencil'>✎</div>
-        <div class='tool' data-toolname='wetFeather'>✒</div>
-        <div class='tool' data-toolname='webTool'>⍱</div>
-        <div class='tool' data-toolname='dot'>⠿</div>
+        <div class='tool active' data-toolname='pencil'>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+          </svg>
+        </div>
+        <div class='tool' data-toolname='wetFeather'>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.71 4.63l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41zM7 14a3 3 0 0 0-3 3c0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2a4 4 0 0 0 4-4 3 3 0 0 0-3-3z"/>
+          </svg>
+        </div>
+        <div class='tool' data-toolname='webTool'>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+            <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+          </svg>
+        </div>
+        <div class='tool' data-toolname='dot'>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="8"/>
+          </svg>
+        </div>
         <!--<div class='tool' data-toolname='finger'>☛</div>-->
       </div>
     <div class='separator'></div>
-    <div id='reset'>↻</div>
-    <div id='saving'>⍗</div>
+    <div id='reset'>
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </div>
+    <div id='saving'>
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+      </svg>
+    </div>
   </div>
   <div id='backgroundSetup'>
+    <div id='backgroundSetupBox'>
+      <h1 id='backgroundSetupTitle'>CANVER</h1>
+      <h2 id='backgroundSetupHeading'>Tap one of the background colours to start</h2>
+    </div>
     <div id='setBgBlack' class='bgSelect' data-color='#000'></div>
     <div id='setBgWhite' class='bgSelect' data-color='#fff'></div>
     <div id='setBgGrey' class='bgSelect' data-color='#333'></div>
