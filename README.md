@@ -16,6 +16,14 @@ For iOS devices, it is recommended to add Canver to Home Screen: then it feels m
     > cd canver
 ```
 
+To serve the app locally during development:
+
+```bash
+ruby -rwebrick -e's=WEBrick::HTTPServer.new(:Port => 5555, :DocumentRoot => Dir.pwd).start'
+```
+
+The app will be available at `http://localhost:5555`.
+
 ### Tests
 
 You'll need ruby and Bundler to run the tests. First, run `bundle install`. Once it's finished, run `bundle exec rake jasmine` and open the url provided by jasmine to run the tests. If you add any new files, make sure they are captured by the configuration file in `spec/javascripts/support/jasmine.yml` and `watch` file.
