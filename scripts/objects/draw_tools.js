@@ -117,8 +117,8 @@ class PencilTool extends DrawTool {
   }
 
   move(e) {
-    this.ctx.setLineCap('round');
-    this.ctx.setLineJoin('round');
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
     for (let touch of Array.from(e.changedTouches)) {
       const log = this.touchlog.forTouch(touch);
       if (!log || !log.previous()) { continue; }
@@ -162,7 +162,7 @@ class WetFeather extends PencilTool {
 
   move(e) {
     super.move(e);
-    this.ctx.setLineCap('square');
+    this.ctx.lineCap = 'square';
     this.ctx.globalAlpha = Math.random();
 
     for (let touch of Array.from(e.changedTouches)) {
@@ -225,8 +225,8 @@ class WebTool extends DrawTool {
   }
 
   move(e) {
-    this.ctx.setLineCap('round');
-    this.ctx.setLineJoin('round');
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
     for (let touch of Array.from(e.changedTouches)) {
       const log = this.touchlog.forTouch(touch);
       if (!log || !(log.length() > 1)) { continue; }

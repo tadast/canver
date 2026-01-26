@@ -20,6 +20,11 @@ class Menu {
     this.initSwitch(); // betveen draw and save modes
   }
 
+  addInputListener(element, handler) {
+    element.addEventListener("touchstart", handler);
+    element.addEventListener("click", handler);
+  }
+
   initColors() {
     this.activeColor = this.element.getElementsByClassName('color active')[0];
     const colors = this.element.getElementsByClassName('color');
@@ -27,7 +32,7 @@ class Menu {
       const result = [];
       for (var color of Array.from(colors)) {
         color.style['background-color'] = color.attributes['data-color'].value;
-        result.push(color.addEventListener("touchstart", e => {
+        result.push(this.addInputListener(color, e => {
           const selectedElm = e.currentTarget;
           color = selectedElm.attributes['data-color'].value;
           this.canver.setColor(color);
@@ -45,7 +50,7 @@ class Menu {
     this.activeSize = this.element.getElementsByClassName('size active')[0];
     const sizes = this.element.getElementsByClassName('size');
     return Array.from(sizes).map((size) =>
-      size.addEventListener("touchstart", e => {
+      this.addInputListener(size, e => {
         const selectedElm = e.currentTarget;
         size = selectedElm.attributes['data-size'].value;
         this.canver.setSize(size);
@@ -61,7 +66,7 @@ class Menu {
     this.canver.setTool(this.activeTool.attributes['data-toolname'].value);
     const tools = this.element.getElementsByClassName('tool');
     return Array.from(tools).map((tool) =>
-      tool.addEventListener("touchstart", e => {
+      this.addInputListener(tool, e => {
         const selectedElm = e.currentTarget;
         const toolName = selectedElm.attributes['data-toolname'].value;
         this.canver.setTool(toolName);
@@ -76,7 +81,7 @@ class Menu {
 
   initReset() {
     const reset = document.getElementById('reset');
-    return reset.addEventListener("touchstart", e => {
+    return this.addInputListener(reset, e => {
       if (confirm('Reset all?')) {
         return window.location.reload();
       }
@@ -85,7 +90,7 @@ class Menu {
 
   initSwitch() {
     this.start.style.display = 'block';
-    return this.start.addEventListener("touchstart", e => {
+    return this.addInputListener(this.start, e => {
       e.preventDefault();
       return this.toggleHide();
     });
@@ -107,7 +112,7 @@ class Menu {
     const saverElm = document.getElementById('saving');
     const imgElement = document.getElementById('saveImage');
     Util.noScrollingOn(imgElement);
-    return saverElm.addEventListener("touchstart", e => {
+    return this.addInputListener(saverElm, e => {
       this.toggleHide();
       return this.canver.switchSaveMode(imgElement);
     });

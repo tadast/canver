@@ -13,11 +13,12 @@ class Canver {
     this.retinaMultiplier = retinaMultiplier;
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
-    this.initTouchable();
+    this.initInputHandlers();
     this.repaintBackground(this.bgColor);
     this.colorizer = new Colorizer;
     this.ctx.fillStyle = "#fa0";
     this.canvas.style.display = 'block';
+    this.isMouseDown = false;
   }
 
   hide() {
@@ -35,7 +36,21 @@ class Canver {
     return this.ctx.fillStyle = fs;
   }
 
-  initTouchable() {
+  mouseEventToTouchEvent(mouseEvent) {
+    const touch = {
+      identifier: 'mouse',
+      clientX: mouseEvent.clientX,
+      clientY: mouseEvent.clientY
+    };
+    return {
+      touches: [touch],
+      changedTouches: [touch],
+      preventDefault: () => mouseEvent.preventDefault()
+    };
+  }
+
+  initInputHandlers() {
+    // Touch events
     this.canvas.addEventListener("touchstart", e => {
       e.preventDefault();
       this.applyColor();
@@ -48,10 +63,37 @@ class Canver {
       return this.tool.move(e);
     });
 
-    return this.canvas.addEventListener("touchend", e => {
+    this.canvas.addEventListener("touchend", e => {
       e.preventDefault();
       this.tool.end(e);
       return true;
+    });
+
+    // Mouse events
+    this.canvas.addEventListener("mousedown", e => {
+      e.preventDefault();
+      this.isMouseDown = true;
+      this.applyColor();
+      return this.tool.start(this.mouseEventToTouchEvent(e));
+    });
+
+    this.canvas.addEventListener("mousemove", e => {
+      if (!this.isMouseDown) return;
+      e.preventDefault();
+      this.applyColor();
+      return this.tool.move(this.mouseEventToTouchEvent(e));
+    });
+
+    this.canvas.addEventListener("mouseup", e => {
+      e.preventDefault();
+      this.isMouseDown = false;
+      return this.tool.end(this.mouseEventToTouchEvent(e));
+    });
+
+    return this.canvas.addEventListener("mouseleave", e => {
+      if (!this.isMouseDown) return;
+      this.isMouseDown = false;
+      return this.tool.end(this.mouseEventToTouchEvent(e));
     });
   }
 

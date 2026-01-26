@@ -5,6 +5,7 @@
  */
 class Util {
   static noScrollingOn(elm) {
-    return elm.addEventListener("touchmove", e => e.preventDefault());
+    elm.addEventListener("touchmove", e => e.preventDefault());
+    return elm.addEventListener("mousemove", e => e.preventDefault());
   }
 }

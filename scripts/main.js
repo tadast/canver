@@ -3,9 +3,6 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-if (!("ontouchend" in document) && (location.search !== '?debug=1')) {
-  window.location = 'unsupported.html';
-}
 
 window.onload = function() {
   const canvas = document.getElementById('canvas');
@@ -22,11 +19,13 @@ window.onload = function() {
     true;
   }
 
-  return bgSetup.addEventListener("touchstart", e => {
+  const initApp = (e) => {
     const colorClicked = e.target.attributes['data-color'].value;
     bgSetup.style.display = 'none';
     this.canver = new Canver(canvas, colorClicked, window.devicePixelRatio);
-    // @canver = new Canver canvas, colorClicked
     return this.menu = new Menu(start, menu, this.canver);
-  });
+  };
+
+  bgSetup.addEventListener("touchstart", initApp);
+  bgSetup.addEventListener("click", initApp);
 };
