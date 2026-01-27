@@ -105,8 +105,18 @@ class Canver {
   }
 
   resizeCanvas() {
-    this.canvas.width = window.innerWidth * this.retinaMultiplier;
-    return this.canvas.height = window.innerHeight * this.retinaMultiplier;
+    const displayWidth = window.innerWidth;
+    const displayHeight = window.innerHeight;
+
+    this.canvas.style.width = displayWidth + 'px';
+    this.canvas.style.height = displayHeight + 'px';
+
+    this.canvas.width = displayWidth * this.retinaMultiplier;
+    this.canvas.height = displayHeight * this.retinaMultiplier;
+
+    this.ctx.setTransform(this.retinaMultiplier, 0, 0, this.retinaMultiplier, 0, 0);
+
+    return true;
   }
 
   setTool(toolName) {

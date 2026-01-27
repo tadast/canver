@@ -21,6 +21,7 @@ window.onload = function() {
 
   const initApp = (e) => {
     const colorClicked = e.target.attributes['data-color'].value;
+    document.body.style.backgroundColor = colorClicked;
     bgSetup.style.display = 'none';
     this.canver = new Canver(canvas, colorClicked, window.devicePixelRatio);
     return this.menu = new Menu(start, menu, this.canver);
