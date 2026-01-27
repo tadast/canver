@@ -143,6 +143,9 @@ class PencilTool extends DrawTool {
   }
 
   end(e) {
+    for (let touch of Array.from(e.changedTouches)) {
+      this.touchlog.clear(touch.identifier);
+    }
     return true;
   }
 }
@@ -244,6 +247,9 @@ class WebTool extends DrawTool {
   }
 
   end(e) {
+    for (let touch of Array.from(e.changedTouches)) {
+      this.touchlog.clear(touch.identifier);
+    }
     return true;
   }
 
