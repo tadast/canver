@@ -6,19 +6,17 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 class Menu {
-  constructor(start, element, canver) {
-    this.start = start;
-    this.element = element;
+  constructor(leftPanel, rightPanel, canver) {
+    this.leftPanel = leftPanel;
+    this.rightPanel = rightPanel;
     this.canver = canver;
     this.initSizes();
     this.initColors();
     this.initTools();
-
     this.initSave();
     this.initReset();
     this.initUndoRedo();
-
-    this.initSwitch(); // betveen draw and save modes
+    this.initPanelHandlers();
   }
 
   addInputListener(element, handler) {
@@ -27,58 +25,60 @@ class Menu {
   }
 
   initColors() {
-    this.activeColor = this.element.getElementsByClassName('color active')[0];
-    const colors = this.element.getElementsByClassName('color');
-    return (() => {
-      const result = [];
-      for (var color of Array.from(colors)) {
-        color.style['background-color'] = color.attributes['data-color'].value;
-        result.push(this.addInputListener(color, e => {
-          const selectedElm = e.currentTarget;
-          color = selectedElm.attributes['data-color'].value;
-          this.canver.setColor(color);
-
-          this.activeColor.className = 'color';
-          selectedElm.className = 'color active';
-          return this.activeColor = selectedElm;
-        }));
-      }
-      return result;
-    })();
+    this.activeColor = this.rightPanel.getElementsByClassName('color active')[0];
+    const colors = this.rightPanel.getElementsByClassName('color');
+    for (const colorEl of Array.from(colors)) {
+      const dc = colorEl.attributes['data-color'];
+      if (dc && dc.value) colorEl.style['background-color'] = dc.value;
+      this.addInputListener(colorEl, e => {
+        const selectedElm = e.currentTarget;
+        const color = selectedElm.attributes['data-color'].value;
+        this.canver.setColor(color);
+        this.activeColor.className = 'color';
+        selectedElm.className = 'color active';
+        this.activeColor = selectedElm;
+      });
+    }
+    const customColorInput = document.getElementById('custom-color');
+    if (customColorInput) {
+      customColorInput.addEventListener('input', e => {
+        const color = e.target.value;
+        this.canver.setColor(color);
+        this.activeColor.className = 'color';
+        this.activeColor = null;
+      });
+    }
   }
 
   initSizes() {
-    this.activeSize = this.element.getElementsByClassName('size active')[0];
-    const sizes = this.element.getElementsByClassName('size');
-    return Array.from(sizes).map((size) =>
+    this.activeSize = this.leftPanel.getElementsByClassName('size active')[0];
+    const sizes = this.leftPanel.getElementsByClassName('size');
+    Array.from(sizes).map((size) =>
       this.addInputListener(size, e => {
         const selectedElm = e.currentTarget;
-        size = selectedElm.attributes['data-size'].value;
-        this.canver.setSize(size);
-
+        const sizeVal = selectedElm.attributes['data-size'].value;
+        this.canver.setSize(sizeVal);
         this.activeSize.className = 'size';
         selectedElm.className = 'size active';
-        return this.activeSize = selectedElm;
+        this.activeSize = selectedElm;
       }));
   }
 
   initTools() {
-    this.activeTool = this.element.getElementsByClassName('tool active')[0];
+    this.activeTool = this.leftPanel.getElementsByClassName('tool active')[0];
     this.canver.setTool(this.activeTool.attributes['data-toolname'].value);
-    const tools = this.element.getElementsByClassName('tool');
-    return Array.from(tools).map((tool) =>
+    const tools = this.leftPanel.getElementsByClassName('tool');
+    Array.from(tools).map((tool) =>
       this.addInputListener(tool, e => {
         const selectedElm = e.currentTarget;
         const toolName = selectedElm.attributes['data-toolname'].value;
         this.canver.setTool(toolName);
         this.canver.setSize(this.activeSize.attributes['data-size'].value);
-
         this.activeTool.className = 'tool';
         selectedElm.className = 'tool active';
-        return this.activeTool = selectedElm;
+        this.activeTool = selectedElm;
       }));
   }
-
 
   initReset() {
     const reset = document.getElementById('reset');
@@ -96,32 +96,39 @@ class Menu {
     if (redo) this.addInputListener(redo, e => { e.preventDefault(); this.canver.redo(); });
   }
 
-  initSwitch() {
-    this.start.style.display = 'flex';
-    return this.addInputListener(this.start, e => {
-      e.preventDefault();
-      return this.toggleHide();
-    });
-  }
-
-  toggleHide() {
-    if (this.element.className === 'hidden') {
-      this.element.className = '';
-      this.start.className = 'down';
-      return this.canver.show(); //that's how we come back from save mode
-    } else {
-      this.element.className = 'hidden';
-      return this.start.className = 'up';
+  initPanelHandlers() {
+    const leftHandler = document.getElementById('left-handler');
+    const rightHandler = document.getElementById('right-handler');
+    if (leftHandler) {
+      this.addInputListener(leftHandler, e => {
+        e.preventDefault();
+        this.leftPanel.classList.add('open');
+        this.leftPanel.classList.remove('collapsed');
+        if (this.canver.canvas.style.display === 'none') this.canver.show();
+      });
+    }
+    if (rightHandler) {
+      this.addInputListener(rightHandler, e => {
+        e.preventDefault();
+        this.rightPanel.classList.add('open');
+        this.rightPanel.classList.remove('collapsed');
+      });
     }
   }
 
+  onDrawingStart() {
+    this.leftPanel.classList.remove('open');
+    this.leftPanel.classList.add('collapsed');
+    this.rightPanel.classList.remove('open');
+    this.rightPanel.classList.add('collapsed');
+  }
 
   initSave() {
     const saverElm = document.getElementById('saving');
     const imgElement = document.getElementById('saveImage');
     Util.noScrollingOn(imgElement);
     return this.addInputListener(saverElm, e => {
-      this.toggleHide();
+      this.onDrawingStart();
       return this.canver.switchSaveMode(imgElement);
     });
   }

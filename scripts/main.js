@@ -7,15 +7,14 @@
 window.onload = function() {
   const canvas = document.getElementById('canvas');
   const bgSetup = document.getElementById('backgroundSetup');
-  const start = document.getElementById('start');
-  const menu = document.getElementById('menu');
+  const leftPanel = document.getElementById('left-panel');
+  const rightPanel = document.getElementById('right-panel');
 
   Util.noScrollingOn(bgSetup);
-  Util.noScrollingOn(start);
-  Util.noScrollingOn(menu);
+  Util.noScrollingOn(leftPanel);
+  Util.noScrollingOn(rightPanel);
 
   if (!window.navigator.standalone) {
-    // alert 'Add this app to your Home Screen for better experience.'
     true;
   }
 
@@ -24,8 +23,13 @@ window.onload = function() {
     document.body.style.backgroundColor = colorClicked;
     bgSetup.style.display = 'none';
     this.canver = new Canver(canvas, colorClicked, window.devicePixelRatio);
-    this.menu = new Menu(start, menu, this.canver);
-    this.menu.toggleHide();
+    this.menu = new Menu(leftPanel, rightPanel, this.canver);
+    leftPanel.classList.remove('before-bg');
+    rightPanel.classList.remove('before-bg');
+
+    const collapsePanelsOnDraw = () => this.menu.onDrawingStart();
+    canvas.addEventListener('touchstart', collapsePanelsOnDraw, { passive: true });
+    canvas.addEventListener('mousedown', collapsePanelsOnDraw);
   };
 
   bgSetup.addEventListener("touchstart", initApp);

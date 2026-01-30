@@ -124,86 +124,146 @@ canvas{
   z-index: 3;
 }
 
-/* Menu stuff */
+/* Side panels */
 
-#start{
+.side-panel.before-bg{
   display: none;
-  background-color: #111;
+}
+
+.side-panel{
   position: fixed;
-  left: 0;
+  top: 0;
   bottom: 0;
-  height: 50px;
-  min-width: 50px;
   z-index: 2;
-  border-top: 1px solid #555;
-  padding: 0;
-  transition: all 0.4s ease;
-  color: #aaa;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-}
-
-#start.up{
-  height: 35px;
-  border-right: 1px solid #555;
-  border-top-right-radius: 10px;
-}
-
-#start svg{
-  width: 24px;
-  height: 24px;
-  fill: #aaa;
-  transition: transform 0.4s ease;
-}
-
-#start.down svg{
-  transform: rotate(180deg);
-}
-
-#menu{
-  color: #aaa;
-  position: fixed;
-  margin: 0 2% 0 5%;
-  bottom: 0;
-  height: 50px;
-  z-index: 2;
-  border-top-right-radius: 10px;
-  border: 1px solid #555;
-  border-bottom: none;
-  width: 93%;
-  max-width: calc(100% - 7%);
-  background-color: #111;
-  box-sizing: border-box;
-  padding: 0 10px;
-  transition: all 0.4s ease;
-  transform: scaleX(1);
   display: flex;
+  align-items: stretch;
+  background-color: #111;
+  border: 1px solid #555;
+  box-sizing: border-box;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  color: #aaa;
+}
+
+.side-panel.open{
+  width: 56px;
+  min-width: 56px;
+}
+
+.side-panel.collapsed{
+  width: 12px;
+  min-width: 12px;
+}
+
+.side-panel.collapsed .panel-content{
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#right-panel.collapsed .panel-content{
+  transform: translateX(100%);
+}
+
+#left-panel{
+  left: 0;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  flex-direction: row;
+}
+
+#right-panel{
+  right: 0;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  flex-direction: row-reverse;
+}
+
+.panel-content{
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
+  padding: 12px 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  flex: 1;
+  min-width: 0;
 }
 
-#menu.hidden{
-  transform: scaleX(0);
-  bottom: -50px;
+#left-panel .panel-content{
+  width: 44px;
 }
 
-#menu .active{
+#right-panel .panel-content{
+  width: 44px;
+  align-items: center;
+}
+
+.panel-handler{
+  width: 12px;
+  min-width: 12px;
+  height: 156px;
+  align-self: center;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(0,0,0,0.3);
+  border-radius: 0 4px 4px 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: visibility 0.2s ease;
+}
+
+.side-panel.open .panel-handler{
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.side-panel.collapsed .panel-handler{
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#right-panel .panel-handler{
+  border-radius: 4px 0 0 4px;
+}
+
+.panel-handler svg{
+  width: 12px;
+  height: 12px;
+  fill: #888;
+  pointer-events: none;
+}
+
+.panel-handler:hover svg,
+.panel-handler:active svg{
+  fill: #ccc;
+}
+
+.side-panel .active{
   color: #fff;
 }
 
-#menu .active svg{
+.side-panel .active svg{
   fill: #fff;
 }
 
-#sizes, #colors, #tools{
+#sizes, #tools{
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 5px;
+  flex-shrink: 0;
+}
+
+#colors{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   flex-shrink: 0;
 }
 
@@ -279,7 +339,6 @@ canvas{
 #undo, #redo, #reset, #saving{
   color: white;
   font-weight: 900;
-  margin-left: auto;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -289,14 +348,6 @@ canvas{
   flex-shrink: 0;
 }
 
-#undo, #redo{
-  margin-left: 0;
-}
-
-#reset{
-  margin-left: auto;
-}
-
 #undo svg, #redo svg, #reset svg, #saving svg{
   width: 24px;
   height: 24px;
@@ -304,10 +355,38 @@ canvas{
 }
 
 .separator{
-  height: 70%;
-  border-left: 1px solid #555;
-  margin: 0;
+  width: 80%;
+  height: 0;
+  border-top: 1px solid #555;
+  margin: 2px 0;
   flex-shrink: 0;
+}
+
+#color-picker-wrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+#custom-color{
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+}
+
+#custom-color::-webkit-color-swatch-wrapper{ padding: 0; }
+#custom-color::-webkit-color-swatch{ border: 2px solid #555; border-radius: 50%; }
+#custom-color::-moz-color-swatch{ border: 2px solid #555; border-radius: 50%; }
+
+.custom-color-label{
+  font-size: 10px;
+  color: #888;
+  cursor: pointer;
 }
 
 /* Animations */
@@ -325,13 +404,14 @@ canvas{
 
 /* Responsive design */
 @media only screen and (max-width: 480px){
-  #menu{
-    padding: 0 5px;
-    gap: 5px;
+  .side-panel.open{
+    width: 52px;
+    min-width: 52px;
   }
 
-  #sizes, #colors, #tools{
-    gap: 3px;
+  #left-panel .panel-content,
+  #right-panel .panel-content{
+    width: 40px;
   }
 
   .tool, .color, .size{
@@ -360,50 +440,63 @@ canvas{
   #backgroundSetupHeading{
     font-size: 32px;
   }
-  #start, #menu{
-    height: 100px;
+
+  .side-panel.open{
+    width: 72px;
+    min-width: 72px;
   }
 
-  #start.up{
-    height: 70px;
-  }
-
-  #start svg{
-    width: 48px;
-    height: 48px;
+  #left-panel .panel-content,
+  #right-panel .panel-content{
+    width: 60px;
   }
 
   .color, .size, .tool{
-    width: 60px;
-    height: 60px;
+    width: 32px;
+    height: 48px;
   }
 
   .tool svg{
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
   }
 
   #undo svg, #redo svg, #reset svg, #saving svg{
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
   }
 
   #smallSize{
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+  }
+
+  #mediumSize{
     height: 40px;
     width: 40px;
     border-radius: 20px;
   }
 
-  #mediumSize{
+  #bigSize{
     height: 52px;
     width: 52px;
     border-radius: 26px;
   }
 
-  #bigSize{
-    height: 72px;
-    width: 72px;
-    border-radius: 36px;
+  .panel-handler{
+    width: 16px;
+    min-width: 16px;
+  }
+
+  .panel-handler svg{
+    width: 16px;
+    height: 16px;
+  }
+
+  .side-panel.collapsed{
+    width: 16px;
+    min-width: 16px;
   }
 }
 
