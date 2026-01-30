@@ -24,7 +24,8 @@ window.onload = function() {
     document.body.style.backgroundColor = colorClicked;
     bgSetup.style.display = 'none';
     this.canver = new Canver(canvas, colorClicked, window.devicePixelRatio);
-    return this.menu = new Menu(start, menu, this.canver);
+    this.menu = new Menu(start, menu, this.canver);
+    this.menu.toggleHide();
   };
 
   bgSetup.addEventListener("touchstart", initApp);

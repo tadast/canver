@@ -76,10 +76,14 @@ class Canver {
   }
 
   initInputHandlers() {
-    const strokeOptions = () => ({
-      color: this.colorizer.nextColour(),
-      size: this.currentSize != null ? this.currentSize : 10
-    });
+    const strokeOptions = () => {
+      const selectedColor = this.colorizer.color;
+      return {
+        color: this.colorizer.nextColour(),
+        selectedColor,
+        size: this.currentSize != null ? this.currentSize : 10
+      };
+    };
 
     const addStrokesFromEnd = (result) => {
       if (Array.isArray(result)) {

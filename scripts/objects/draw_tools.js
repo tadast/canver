@@ -9,7 +9,7 @@
 // contains info about all available tools
 class ToolRegister {
   constructor() {
-    this.tools = [DotTool, PencilTool, WebTool];
+    this.tools = [DotTool, PencilTool, WebTool, FillTool];
   }
 
   // gives a tool class given a tool name
@@ -247,6 +247,163 @@ class WebTool extends DrawTool {
 }
 WebTool.initClass();
 
+function canvasPixelCoords(canvas, clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: Math.floor((clientX - rect.left) * scaleX),
+    y: Math.floor((clientY - rect.top) * scaleY)
+  };
+}
+
+function colorMatch(a, b, tolerance) {
+  if (tolerance == null) tolerance = 32;
+  return Math.abs(a[0] - b[0]) <= tolerance &&
+    Math.abs(a[1] - b[1]) <= tolerance &&
+    Math.abs(a[2] - b[2]) <= tolerance &&
+    Math.abs(a[3] - b[3]) <= 64;
+}
+
+function hslToRgb(h, s, l) {
+  h = h % 360 / 360;
+  let r, g, b;
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), 255];
+}
+
+function parseFillColor(colorStr) {
+  if (!colorStr || colorStr === '') return null;
+  const hex = colorStr.replace(/^#/, '');
+  if (hex.length === 3) {
+    return [
+      parseInt(hex[0] + hex[0], 16),
+      parseInt(hex[1] + hex[1], 16),
+      parseInt(hex[2] + hex[2], 16),
+      255
+    ];
+  }
+  if (hex.length === 6) {
+    return [
+      parseInt(hex.slice(0, 2), 16),
+      parseInt(hex.slice(2, 4), 16),
+      parseInt(hex.slice(4, 6), 16),
+      255
+    ];
+  }
+  const ctx = document.createElement('canvas').getContext('2d');
+  ctx.fillStyle = colorStr;
+  const c = ctx.fillStyle;
+  const m = c.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/);
+  if (m) return [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10), m[4] != null ? Math.round(parseFloat(m[4]) * 255) : 255];
+  return null;
+}
+
+class FillTool extends DrawTool {
+  static initClass() {
+    this.toolName = 'fill';
+  }
+
+  start(e, options) {
+    this._pendingFillStroke = null;
+    const touch = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+    if (!touch) return;
+    const { x: px, y: py } = canvasPixelCoords(this.canvas, touch.clientX, touch.clientY);
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    if (px < 0 || px >= w || py < 0 || py >= h) return;
+    const imageData = this.ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
+    const seedIdx = (py * w + px) * 4;
+    const seedColor = [data[seedIdx], data[seedIdx + 1], data[seedIdx + 2], data[seedIdx + 3]];
+    const isRainbow = options.selectedColor === '' || (options.color !== undefined && options.color === '');
+    const fillColor = isRainbow ? null : parseFillColor(options.color);
+    if (!isRainbow && !fillColor) return;
+    const stack = [[px, py]];
+    const filled = new Uint8Array(w * h);
+    filled[py * w + px] = 1;
+    let minX = px, maxX = px, minY = py, maxY = py;
+    const rainbowPixels = isRainbow ? [] : null;
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
+      const idx = (y * w + x) * 4;
+      if (isRainbow) {
+        rainbowPixels.push([x, y]);
+      } else {
+        data[idx] = fillColor[0];
+        data[idx + 1] = fillColor[1];
+        data[idx + 2] = fillColor[2];
+        data[idx + 3] = fillColor[3];
+      }
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+      for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+        if (filled[ny * w + nx]) continue;
+        const nidx = (ny * w + nx) * 4;
+        const nc = [data[nidx], data[nidx + 1], data[nidx + 2], data[nidx + 3]];
+        if (!colorMatch(seedColor, nc)) continue;
+        filled[ny * w + nx] = 1;
+        stack.push([nx, ny]);
+      }
+    }
+    if (isRainbow && rainbowPixels.length > 0) {
+      const rw = maxX - minX + 1;
+      const rh = maxY - minY + 1;
+      for (const [x, y] of rainbowPixels) {
+        const t = (x - minX) / rw * 0.5 + (y - minY) / rh * 0.5;
+        const hue = (t * 360) % 360;
+        const rgb = hslToRgb(hue, 1, 0.5);
+        const idx = (y * w + x) * 4;
+        data[idx] = rgb[0];
+        data[idx + 1] = rgb[1];
+        data[idx + 2] = rgb[2];
+        data[idx + 3] = 255;
+      }
+    }
+    this.ctx.putImageData(imageData, 0, 0);
+    const rw = maxX - minX + 1;
+    const rh = maxY - minY + 1;
+    const regionData = this.ctx.getImageData(minX, minY, rw, rh);
+    this._pendingFillStroke = {
+      tool: 'fill',
+      x: minX,
+      y: minY,
+      width: rw,
+      height: rh,
+      data: new Uint8ClampedArray(regionData.data)
+    };
+  }
+
+  move(e) {}
+
+  end(e) {
+    const stroke = this._pendingFillStroke;
+    this._pendingFillStroke = null;
+    return stroke ? [stroke] : [];
+  }
+}
+FillTool.initClass();
+
 function drawStroke(ctx, stroke) {
   ctx.fillStyle = stroke.color;
   ctx.strokeStyle = stroke.color;
@@ -313,5 +470,12 @@ function drawStroke(ctx, stroke) {
         ctx.stroke();
       }
     }
+    return;
+  }
+
+  if (stroke.tool === 'fill') {
+    const imageData = ctx.createImageData(stroke.width, stroke.height);
+    imageData.data.set(stroke.data);
+    ctx.putImageData(imageData, stroke.x, stroke.y);
   }
 }
