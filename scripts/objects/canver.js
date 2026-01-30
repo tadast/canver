@@ -12,13 +12,16 @@ class Canver {
     if (retinaMultiplier == null) { retinaMultiplier = 1; }
     this.retinaMultiplier = retinaMultiplier;
     this.ctx = this.canvas.getContext("2d");
+    this.strokes = [];
+    this.redoStack = [];
+    this.currentSize = 10;
     this.resizeCanvas();
     this.initInputHandlers();
-    this.repaintBackground(this.bgColor);
     this.colorizer = new Colorizer;
     this.ctx.fillStyle = "#fa0";
     this.canvas.style.display = 'block';
     this.isMouseDown = false;
+    this.render();
   }
 
   hide() {
@@ -36,6 +39,29 @@ class Canver {
     return this.ctx.fillStyle = fs;
   }
 
+  render() {
+    this.ctx.shadowBlur = 0;
+    this.ctx.globalAlpha = 1;
+    this.repaintBackground(this.bgColor);
+    for (const stroke of this.strokes) {
+      drawStroke(this.ctx, stroke);
+    }
+    this.ctx.shadowBlur = 0;
+    this.ctx.globalAlpha = 1;
+  }
+
+  undo() {
+    if (this.strokes.length === 0) return;
+    this.redoStack.push(this.strokes.pop());
+    this.render();
+  }
+
+  redo() {
+    if (this.redoStack.length === 0) return;
+    this.strokes.push(this.redoStack.pop());
+    this.render();
+  }
+
   mouseEventToTouchEvent(mouseEvent) {
     const touch = {
       identifier: 'mouse',
@@ -50,50 +76,71 @@ class Canver {
   }
 
   initInputHandlers() {
-    // Touch events
+    const strokeOptions = () => ({
+      color: this.colorizer.nextColour(),
+      size: this.currentSize != null ? this.currentSize : 10
+    });
+
+    const addStrokesFromEnd = (result) => {
+      if (Array.isArray(result)) {
+        result.forEach(s => this.strokes.push(s));
+      } else if (result) {
+        this.strokes.push(result);
+      }
+      this.redoStack = [];
+      this.render();
+    };
+
     this.canvas.addEventListener("touchstart", e => {
       e.preventDefault();
-      this.applyColor();
-      return this.tool.start(e);
+      const opts = strokeOptions();
+      this.ctx.fillStyle = opts.color;
+      this.ctx.strokeStyle = opts.color;
+      this.ctx.shadowColor = opts.color;
+      return this.tool.start(e, opts);
     });
 
     this.canvas.addEventListener("touchmove", e => {
       e.preventDefault();
-      this.applyColor();
-      return this.tool.move(e);
+      const color = this.applyColor();
+      return this.tool.move(e, { color });
     });
 
     this.canvas.addEventListener("touchend", e => {
       e.preventDefault();
-      this.tool.end(e);
-      return true;
+      const result = this.tool.end(e);
+      addStrokesFromEnd(result);
     });
 
-    // Mouse events
     this.canvas.addEventListener("mousedown", e => {
       e.preventDefault();
       this.isMouseDown = true;
-      this.applyColor();
-      return this.tool.start(this.mouseEventToTouchEvent(e));
+      const opts = strokeOptions();
+      this.ctx.fillStyle = opts.color;
+      this.ctx.strokeStyle = opts.color;
+      this.ctx.shadowColor = opts.color;
+      return this.tool.start(this.mouseEventToTouchEvent(e), opts);
     });
 
     this.canvas.addEventListener("mousemove", e => {
       if (!this.isMouseDown) return;
       e.preventDefault();
-      this.applyColor();
-      return this.tool.move(this.mouseEventToTouchEvent(e));
+      const color = this.applyColor();
+      return this.tool.move(this.mouseEventToTouchEvent(e), { color });
     });
 
     this.canvas.addEventListener("mouseup", e => {
       e.preventDefault();
       this.isMouseDown = false;
-      return this.tool.end(this.mouseEventToTouchEvent(e));
+      const result = this.tool.end(this.mouseEventToTouchEvent(e));
+      addStrokesFromEnd(result);
     });
 
     return this.canvas.addEventListener("mouseleave", e => {
       if (!this.isMouseDown) return;
       this.isMouseDown = false;
-      return this.tool.end(this.mouseEventToTouchEvent(e));
+      const result = this.tool.end(this.mouseEventToTouchEvent(e));
+      addStrokesFromEnd(result);
     });
   }
 
@@ -101,7 +148,8 @@ class Canver {
     const colour = this.colorizer.nextColour();
     this.ctx.fillStyle = colour;
     this.ctx.shadowColor = colour;
-    return this.ctx.strokeStyle = colour;
+    this.ctx.strokeStyle = colour;
+    return colour;
   }
 
   resizeCanvas() {
@@ -116,6 +164,7 @@ class Canver {
 
     this.ctx.setTransform(this.retinaMultiplier, 0, 0, this.retinaMultiplier, 0, 0);
 
+    if (this.strokes) this.render();
     return true;
   }
 
@@ -132,6 +181,7 @@ class Canver {
   }
 
   setSize(size) {
+    this.currentSize = size;
     return this.tool.setSize(size);
   }
 

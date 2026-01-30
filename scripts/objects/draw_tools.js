@@ -9,7 +9,7 @@
 // contains info about all available tools
 class ToolRegister {
   constructor() {
-    this.tools = [DotTool, WetFeather, PencilTool, WebTool];
+    this.tools = [DotTool, PencilTool, WebTool];
   }
 
   // gives a tool class given a tool name
@@ -64,7 +64,12 @@ class DotTool extends DrawTool {
     return this.ctx.shadowBlur = 2;
   }
 
-  start(e) {
+  start(e, options) {
+    if (options) {
+      this._strokeColor = options.color;
+      this._strokeSize = options.size;
+      this._strokeDots = [];
+    }
     return Array.from(e.touches).map((touch) =>
       this.draw(touch.clientX, touch.clientY));
   }
@@ -75,25 +80,27 @@ class DotTool extends DrawTool {
   }
 
   end(e) {
-    return true;
+    if (!this._strokeDots || this._strokeDots.length === 0) { return []; }
+    const stroke = { tool: 'dot', color: this._strokeColor, size: this._strokeSize, dots: this._strokeDots };
+    this._strokeDots = [];
+    return [stroke];
   }
 
   draw(x, y) {
-    return (() => {
-      const result = [];
-      for (let i = 0; i <= 5; i++) {
-        this.ctx.globalAlpha = Math.random();
-        const xOff = this.drawRadius * this.spread * (Math.random() - 0.5);
-        const yOff = this.drawRadius * this.spread * (Math.random() - 0.5);
-        const radius = this.drawRadius * (Math.random() + 0.5);
-
-        this.ctx.beginPath();
-        this.ctx.arc(x + xOff, y + yOff, radius, 0, Math.PI*2, true);
-        this.ctx.closePath();
-        result.push(this.ctx.fill());
-      }
-      return result;
-    })();
+    for (let i = 0; i <= 5; i++) {
+      const alpha = Math.random();
+      const xOff = this.drawRadius * this.spread * (Math.random() - 0.5);
+      const yOff = this.drawRadius * this.spread * (Math.random() - 0.5);
+      const radius = this.drawRadius * (Math.random() + 0.5);
+      const cx = x + xOff;
+      const cy = y + yOff;
+      if (this._strokeDots) { this._strokeDots.push({ cx, cy, radius, alpha, color: this.ctx.fillStyle }); }
+      this.ctx.globalAlpha = alpha;
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy, radius, 0, Math.PI*2, true);
+      this.ctx.closePath();
+      this.ctx.fill();
+    }
   }
 
   setSize(size) {
@@ -112,11 +119,21 @@ class PencilTool extends DrawTool {
     return this.touchlog || (this.touchlog = new TouchLog);
   }
 
-  start(e) {
-    return this.touchlog.logEvent(e);
+  start(e, options) {
+    if (options) {
+      this._strokeColor = options.color;
+      this._strokeSize = options.size;
+      this._pointsByTouchId = {};
+    }
+    this.touchlog.logEvent(e);
+    for (let touch of Array.from(e.touches)) {
+      const pt = { x: touch.clientX, y: touch.clientY };
+      if (options && options.color) pt.color = options.color;
+      this._pointsByTouchId[touch.identifier] = [pt];
+    }
   }
 
-  move(e) {
+  move(e, options) {
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     for (let touch of Array.from(e.changedTouches)) {
@@ -126,90 +143,40 @@ class PencilTool extends DrawTool {
       this.ctx.lineWidth = this.drawRadius;
       this.ctx.beginPath();
 
-      // move to midpoint between last and prev points so that bezier curves don't intersect
       const startX = (log.previous().x + log.current().x) / 2;
       const startY = (log.previous().y + log.current().y) / 2;
       this.ctx.moveTo(startX, startY);
 
-      // do the same with the end point
       const endX = (log.current().x + touch.clientX) / 2;
       const endY = (log.current().y + touch.clientY) / 2;
       this.ctx.quadraticCurveTo(log.current().x, log.current().y, endX, endY);
 
       this.ctx.stroke();
       this.ctx.closePath();
+
+      const pts = this._pointsByTouchId[touch.identifier];
+      if (pts) {
+        const pt = { x: touch.clientX, y: touch.clientY };
+        if (options && options.color) pt.color = options.color;
+        pts.push(pt);
+      }
     }
     return this.touchlog.logEvent(e);
   }
 
   end(e) {
+    const strokes = [];
     for (let touch of Array.from(e.changedTouches)) {
+      const points = this._pointsByTouchId && this._pointsByTouchId[touch.identifier];
       this.touchlog.clear(touch.identifier);
+      if (this._pointsByTouchId) delete this._pointsByTouchId[touch.identifier];
+      if (!points || points.length < 2) { continue; }
+      strokes.push({ tool: 'pencil', color: this._strokeColor, size: this._strokeSize, points });
     }
-    return true;
+    return strokes;
   }
 }
 PencilTool.initClass();
-
-class WetFeather extends PencilTool {
-  static initClass() {
-    this.toolName = 'wetFeather';
-  }
-  init() {
-    super.init();
-    this.dribbleLength = 100;  // how long is a drop
-    this.probability = 0.3;   // how likely is it to drip for each touch event?
-    this.dropFactor = 1.3;    // how much bigger is the dropplet at the end of the line?
-    return this.ctx.shadowBlur = 4;
-  }
-
-  move(e) {
-    super.move(e);
-    this.ctx.lineCap = 'square';
-    this.ctx.globalAlpha = Math.random();
-
-    for (let touch of Array.from(e.changedTouches)) {
-      this.dribble(touch);
-    }
-
-    return this.ctx.globalAlpha = this.defaultAlpha;
-  }
-
-  dribble(touch) {
-    const log = this.touchlog.forTouch(touch);
-    if (!log || !log.previous()) { return false; }
-    if (Math.random() > this.probability) { return false; }
-    this.ctx.lineWidth = this.drawRadius / ((this.ctx.globalAlpha * 2) + 1); // the thicker the more transparent
-    this.ctx.beginPath();
-
-    const startX = log.current().x;
-    const startY = log.current().y;
-    const dropEndY = startY + (Math.random() * (this.dribbleLength + (this.drawRadius * 4)));
-    this.ctx.moveTo(startX, startY);
-    this.ctx.lineTo(startX, dropEndY);
-    this.ctx.closePath();
-    this.ctx.stroke();
-
-    return this.dropletEnd(startX, dropEndY, this.ctx.lineWidth);
-  }
-
-  dropletEnd(x, y, width) {
-    this.ctx.beginPath();
-    const radius = (this.dropFactor * width) / 2;
-
-    // Trapeze
-    this.ctx.moveTo(x - (width/2), y);
-    this.ctx.lineTo(x + (width/2), y);
-    this.ctx.lineTo(x + radius, y + (radius*2));
-    this.ctx.lineTo(x - radius, y + (radius*2));
-
-    // half circle
-    this.ctx.arc(x, y + (radius*2), radius, 0, Math.PI, false);
-    this.ctx.closePath();
-    return this.ctx.fill();
-  }
-}
-WetFeather.initClass();
 
 // Registers N last poins and when a new one is added,
 // joins them with thin lines drawing web-like structures
@@ -223,11 +190,21 @@ class WebTool extends DrawTool {
     return this.touchlog || (this.touchlog = new TouchLog);
   }
 
-  start(e) {
-    return this.touchlog.logEvent(e);
+  start(e, options) {
+    if (options) {
+      this._strokeColor = options.color;
+      this._strokeSize = options.size;
+      this._pointsByTouchId = {};
+    }
+    this.touchlog.logEvent(e);
+    for (let touch of Array.from(e.touches)) {
+      const pt = { x: touch.clientX, y: touch.clientY };
+      if (options && options.color) pt.color = options.color;
+      this._pointsByTouchId[touch.identifier] = [pt];
+    }
   }
 
-  move(e) {
+  move(e, options) {
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     for (let touch of Array.from(e.changedTouches)) {
@@ -241,20 +218,100 @@ class WebTool extends DrawTool {
         this.ctx.closePath();
         this.ctx.stroke();
       }
+      const pts = this._pointsByTouchId[touch.identifier];
+      if (pts) {
+        const pt = { x: touch.clientX, y: touch.clientY };
+        if (options && options.color) pt.color = options.color;
+        pts.push(pt);
+      }
     }
 
     return this.touchlog.logEvent(e);
   }
 
   end(e) {
+    const strokes = [];
     for (let touch of Array.from(e.changedTouches)) {
+      const points = this._pointsByTouchId && this._pointsByTouchId[touch.identifier];
       this.touchlog.clear(touch.identifier);
+      if (this._pointsByTouchId) delete this._pointsByTouchId[touch.identifier];
+      if (!points || points.length < 2) { continue; }
+      strokes.push({ tool: 'webTool', color: this._strokeColor, size: this._strokeSize, points });
     }
-    return true;
+    return strokes;
   }
 
   setSize(size) {
     return this.touchlog.size = size;
   }
 }
-WebTool.initClass(); // store more points for the lines to join to
+WebTool.initClass();
+
+function drawStroke(ctx, stroke) {
+  ctx.fillStyle = stroke.color;
+  ctx.strokeStyle = stroke.color;
+  ctx.shadowColor = stroke.color;
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  if (stroke.tool === 'dot') {
+    ctx.shadowBlur = 2;
+    for (let d of stroke.dots) {
+      ctx.fillStyle = d.color || stroke.color;
+      ctx.strokeStyle = d.color || stroke.color;
+      ctx.shadowColor = d.color || stroke.color;
+      ctx.globalAlpha = d.alpha;
+      ctx.beginPath();
+      ctx.arc(d.cx, d.cy, d.radius, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    return;
+  }
+
+  if (stroke.tool === 'pencil') {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = stroke.size;
+    const pts = stroke.points;
+    if (pts.length < 2) { return; }
+    for (let i = 1; i < pts.length; i++) {
+      const segColor = pts[i].color || stroke.color;
+      ctx.strokeStyle = segColor;
+      ctx.shadowColor = segColor;
+      const startX = i > 1 ? (pts[i - 2].x + pts[i - 1].x) / 2 : pts[0].x;
+      const startY = i > 1 ? (pts[i - 2].y + pts[i - 1].y) / 2 : pts[0].y;
+      const endX = (pts[i - 1].x + pts[i].x) / 2;
+      const endY = (pts[i - 1].y + pts[i].y) / 2;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, endX, endY);
+      ctx.stroke();
+      ctx.closePath();
+    }
+    return;
+  }
+
+  if (stroke.tool === 'webTool') {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 0.1;
+    const pts = stroke.points;
+    const size = stroke.size;
+    for (let i = 1; i < pts.length; i++) {
+      const segColor = pts[i].color || stroke.color;
+      ctx.strokeStyle = segColor;
+      ctx.shadowColor = segColor;
+      for (let j = 0; j < Math.min(i, size); j++) {
+        const coord = pts[i - 1 - j];
+        ctx.beginPath();
+        ctx.moveTo(pts[i].x, pts[i].y);
+        ctx.lineTo(coord.x, coord.y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    }
+  }
+}

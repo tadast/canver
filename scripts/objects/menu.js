@@ -16,6 +16,7 @@ class Menu {
 
     this.initSave();
     this.initReset();
+    this.initUndoRedo();
 
     this.initSwitch(); // betveen draw and save modes
   }
@@ -86,6 +87,13 @@ class Menu {
         return window.location.reload();
       }
     });
+  }
+
+  initUndoRedo() {
+    const undo = document.getElementById('undo');
+    const redo = document.getElementById('redo');
+    if (undo) this.addInputListener(undo, e => { e.preventDefault(); this.canver.undo(); });
+    if (redo) this.addInputListener(redo, e => { e.preventDefault(); this.canver.redo(); });
   }
 
   initSwitch() {

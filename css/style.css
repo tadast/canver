@@ -276,7 +276,7 @@ canvas{
   border-radius: 18px;
 }
 
-#reset, #saving{
+#undo, #redo, #reset, #saving{
   color: white;
   font-weight: 900;
   margin-left: auto;
@@ -289,7 +289,15 @@ canvas{
   flex-shrink: 0;
 }
 
-#reset svg, #saving svg{
+#undo, #redo{
+  margin-left: 0;
+}
+
+#reset{
+  margin-left: auto;
+}
+
+#undo svg, #redo svg, #reset svg, #saving svg{
   width: 24px;
   height: 24px;
   fill: white;
@@ -331,7 +339,7 @@ canvas{
     height: 28px;
   }
 
-  .tool svg, #reset svg, #saving svg{
+  .tool svg, #undo svg, #redo svg, #reset svg, #saving svg{
     width: 20px;
     height: 20px;
   }
@@ -375,7 +383,7 @@ canvas{
     height: 48px;
   }
 
-  #reset svg, #saving svg{
+  #undo svg, #redo svg, #reset svg, #saving svg{
     width: 48px;
     height: 48px;
   }

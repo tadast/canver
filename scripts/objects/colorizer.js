@@ -12,7 +12,7 @@ class Colorizer {
     this.color = '';
   }
 
-  // Returns the next colour value as a string
+  // Returns the next colour value as a string. In rainbow mode advances hue each call (within-stroke cycling).
   nextColour() {
     if (this.color === '') {
       this.hue++;
